@@ -10,20 +10,23 @@ class BtnDesign extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: RaisedButton(
-        shape: Common.roundBorder,
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Text(
-            text,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 18,
+      child: Container(
+        margin: EdgeInsets.all(3),
+        child: RaisedButton(
+          shape: Common.roundBorder,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              text,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
           ),
+          onPressed: () => function(),
+          color: Colors.white,
         ),
-        onPressed: () => function(),
-        color: Colors.white,
       ),
     );
   }

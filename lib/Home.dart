@@ -89,7 +89,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             SizedBox(
-              height: 10,
+              height: 5,
             ),
             textFieldDesign(),
             SizedBox(
@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
               border: InputBorder.none,
               hintText: placeHolder,
               hintStyle: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
               )),
         ),
