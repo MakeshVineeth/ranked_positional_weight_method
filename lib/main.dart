@@ -35,6 +35,8 @@ class _HomeState extends State<Home> {
   static const f1 = 'Enter m and n.';
   static const f2 = 'Enter Node, Final Node and Tek.';
 
+  bool isEditable = true;
+
   @override
   void initState() {
     super.initState();
@@ -65,6 +67,24 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void clearAll() {
+    setState(() {
+      myController.clear();
+      isEditable = true;
+      m = 0;
+      n = 0;
+      allValues.clear();
+      output.clear();
+      placeHolder = f1;
+    });
+  }
+
+  void disableField() {
+    setState(() {
+      isEditable = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,13 +109,14 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
+                separatorBuilder: (context, index) => Divider(),
                 physics: BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics()),
                 itemCount: output.length,
                 itemBuilder: (context, index) {
                   return Text(
-                    '${output[index]}',
+                    '${output[index].trim()}',
                     style: TextStyle(
                       backgroundColor: Colors.transparent,
                       fontWeight: FontWeight.w600,
@@ -118,6 +139,7 @@ class _HomeState extends State<Home> {
                     ),
                     keyboardType: TextInputType.number,
                     controller: myController,
+                    enabled: isEditable,
                     decoration: InputDecoration(
                         border: new OutlineInputBorder(
                           borderRadius: const BorderRadius.all(
@@ -126,7 +148,7 @@ class _HomeState extends State<Home> {
                         ),
                         hintText: placeHolder,
                         hintStyle: TextStyle(
-                          fontSize: 15,
+                          fontSize: 18,
                           fontWeight: FontWeight.w600,
                         )),
                   ),
@@ -164,7 +186,7 @@ class _HomeState extends State<Home> {
 
   int m = 0;
   int n = 0;
-  List allValues = [];
+  List<List<String>> allValues = [];
 
   static const separate = ' ';
 
@@ -176,7 +198,7 @@ class _HomeState extends State<Home> {
         m = int.tryParse(values[0]);
         n = int.tryParse(values[1]);
 
-        pushOutput('Entered: m = $m and n = $n\n');
+        pushOutput('Entered: m = $m and n = $n');
         changePlaceHolder(f2);
       }
     }
@@ -189,12 +211,41 @@ class _HomeState extends State<Home> {
         allValues.add(values);
 
         if (allValues.length == m) {
-          pushOutput('Data given: $allValues');
-          changePlaceHolder('Next');
+          pushOutput('Given Data: $allValues');
+          changePlaceHolder('Processing...');
+          disableField();
+          doWork();
         } else {
+          pushOutput('Entered: $values');
           clearTextField();
         }
       }
     }
+  }
+
+  void doWork() {
+    List<int> uniqueList = [];
+
+    allValues.forEach((innerList) {
+      int val = int.tryParse(innerList.elementAt(0));
+      uniqueList.add(val);
+      val = int.tryParse(innerList.elementAt(1));
+      uniqueList.add(val);
+    });
+
+    uniqueList = [
+      ...{...uniqueList}
+    ];
+
+    uniqueList.sort();
+    pushOutput('List of All Nodes: $uniqueList');
+
+    uniqueList.forEach((int mainNode) {
+      for (int i = 0; i < allValues.length; i++) {
+        int val = int.tryParse(allValues[i][0]);
+
+        if (val == mainNode) {}
+      }
+    });
   }
 }
