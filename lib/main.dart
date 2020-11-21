@@ -104,11 +104,9 @@ class _HomeState extends State<Home> {
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
+              flex: 3,
               child: ListView.separated(
                 separatorBuilder: (context, index) => Divider(
                   height: 30,
@@ -130,35 +128,32 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
+            TextField(
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+                backgroundColor: Colors.transparent,
+              ),
+              keyboardType: TextInputType.number,
+              controller: myController,
+              enabled: isEditable,
+              decoration: InputDecoration(
+                  border: new OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(10.0),
+                    ),
+                  ),
+                  hintText: placeHolder,
+                  hintStyle: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  )),
+            ),
+            SizedBox(
+              height: 10,
+            ),
             Row(
               children: [
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                      backgroundColor: Colors.transparent,
-                    ),
-                    keyboardType: TextInputType.number,
-                    controller: myController,
-                    enabled: isEditable,
-                    decoration: InputDecoration(
-                        border: new OutlineInputBorder(
-                          borderRadius: const BorderRadius.all(
-                            const Radius.circular(10.0),
-                          ),
-                        ),
-                        hintText: placeHolder,
-                        hintStyle: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        )),
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
                 Expanded(
                   child: MaterialButton(
                     shape: RoundedRectangleBorder(
@@ -170,6 +165,7 @@ class _HomeState extends State<Home> {
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -191,6 +187,7 @@ class _HomeState extends State<Home> {
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -261,7 +258,18 @@ class _HomeState extends State<Home> {
     ];
 
     uniqueList.sort();
-    pushOutput('List of All Nodes: $uniqueList');
+
+    List<String> out1 = [];
+    uniqueList.forEach((int v) {
+      for (int i = 0; i < allValues.length; i++) {
+        int val = int.tryParse(allValues[i][0]);
+        if (val == v) {
+          out1.add('${allValues[i][0]} : ${allValues[i][2]}');
+          break;
+        }
+      }
+    });
+    pushOutput('List of Nodes with Tek: $out1');
 
     List<List<String>> arrayChains = [];
 
