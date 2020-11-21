@@ -265,6 +265,7 @@ class _HomeState extends State<Home> {
     List<List<String>> arrayChains = [];
 
     uniqueList.forEach((int mainNode) {
+      // get chains for each node.
       List<String> temp = [];
       int tempVal = mainNode;
 
@@ -279,10 +280,13 @@ class _HomeState extends State<Home> {
         }
 
         if (tempVal == uniqueList[uniqueList.length - 1]) {
+          temp.add('${uniqueList[uniqueList.length - 1]}');
           arrayChains.add(temp);
           break;
         }
       }
+
+      // end for each final node.
     });
 
     pushOutput('Array Chains: $arrayChains');
