@@ -137,7 +137,7 @@ class _HomeState extends State<Home> {
                   child: TextField(
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize: 22,
+                      fontSize: 18,
                       backgroundColor: Colors.transparent,
                     ),
                     keyboardType: TextInputType.number,
@@ -170,12 +170,31 @@ class _HomeState extends State<Home> {
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          letterSpacing: 2,
                         ),
                       ),
                     ),
                     onPressed: () => nowCode(),
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: MaterialButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        'Clear',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    onPressed: () => clearAll(),
                     color: Colors.blue,
                   ),
                 ),
