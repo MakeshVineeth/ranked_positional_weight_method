@@ -110,7 +110,10 @@ class _HomeState extends State<Home> {
           children: [
             Expanded(
               child: ListView.separated(
-                separatorBuilder: (context, index) => Divider(),
+                separatorBuilder: (context, index) => Divider(
+                  height: 30,
+                  thickness: 2,
+                ),
                 physics: BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics()),
                 itemCount: output.length,
