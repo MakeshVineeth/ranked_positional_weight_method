@@ -180,11 +180,13 @@ class _HomeState extends State<Home> {
     // f3
     else if (placeHolder == f3) {
       finalNodeTek = double.tryParse(myController.text.trim());
-      pushOutput('Entered Final Tek: $finalNodeTek');
-      pushOutput('Given Data: $allValues');
-      changePlaceHolder('Processing...');
-      disableField();
-      doWork();
+      if (finalNodeTek != null) {
+        pushOutput('Entered Final Tek: $finalNodeTek');
+        pushOutput('Given Data: $allValues');
+        changePlaceHolder('Processing...');
+        disableField();
+        doWork();
+      }
     }
   }
 
@@ -214,6 +216,8 @@ class _HomeState extends State<Home> {
         }
       }
     });
+
+    out1.add('${uniqueList[uniqueList.length - 1]} : $finalNodeTek');
     pushOutput('List of Nodes with Tek: $out1');
 
     List<List<String>> arrayChains = [];
@@ -245,6 +249,7 @@ class _HomeState extends State<Home> {
       // end for each final node.
     });
 
+    // arrayChains.removeLast();
     pushOutput('Arrow Chains: $arrayChains');
     changePlaceHolder('Finished!');
   }
