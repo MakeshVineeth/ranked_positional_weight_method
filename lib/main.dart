@@ -233,6 +233,7 @@ class _HomeState extends State<Home> {
         allValues.add(values);
 
         if (allValues.length == m) {
+          pushOutput('Entered: $values');
           pushOutput('Given Data: $allValues');
           changePlaceHolder('Processing...');
           disableField();
@@ -264,12 +265,14 @@ class _HomeState extends State<Home> {
 
     List<List<String>> arrayChains = [];
 
+    // m: 5, [126][231][346][463][673] chains: [123467][23467][3467][467][67][7]
+
     uniqueList.forEach((int mainNode) {
       // get chains for each node.
       List<String> temp = [];
       int tempVal = mainNode;
 
-      while (true) {
+      for (int i = 0; i < allValues.length; i++) {
         for (int i = 0; i < allValues.length; i++) {
           int val = int.tryParse(allValues[i][0]);
 
