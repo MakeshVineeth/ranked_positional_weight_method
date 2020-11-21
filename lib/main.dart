@@ -107,94 +107,70 @@ class _HomeState extends State<Home> {
           children: [
             Expanded(
               flex: 3,
-              child: ListView.separated(
-                separatorBuilder: (context, index) => Divider(
-                  height: 30,
-                  thickness: 2,
-                ),
-                physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                itemCount: output.length,
-                itemBuilder: (context, index) {
-                  return Text(
-                    '${output[index].trim()}',
-                    style: TextStyle(
-                      backgroundColor: Colors.transparent,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20,
-                      letterSpacing: 1.5,
+              child: Card(
+                shape: roundBorder,
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => Divider(
+                      height: 30,
+                      thickness: 1.5,
                     ),
-                  );
-                },
+                    physics: BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics()),
+                    itemCount: output.length,
+                    itemBuilder: (context, index) {
+                      return Text(
+                        '${output[index].trim()}',
+                        style: TextStyle(
+                          backgroundColor: Colors.transparent,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                          letterSpacing: 1,
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
-            TextField(
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-                backgroundColor: Colors.transparent,
-              ),
-              keyboardType: TextInputType.number,
-              controller: myController,
-              enabled: isEditable,
-              decoration: InputDecoration(
-                  border: new OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(10.0),
-                    ),
-                  ),
-                  hintText: placeHolder,
-                  hintStyle: TextStyle(
-                    fontSize: 18,
+            SizedBox(
+              height: 10,
+            ),
+            Card(
+              shape: roundBorder,
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: TextField(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
-                  )),
+                    fontSize: 18,
+                    backgroundColor: Colors.transparent,
+                  ),
+                  controller: myController,
+                  enabled: isEditable,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: placeHolder,
+                      hintStyle: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      )),
+                ),
+              ),
             ),
             SizedBox(
               height: 10,
             ),
             Row(
               children: [
-                Expanded(
-                  child: MaterialButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        'Enter',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    onPressed: () => nowCode(),
-                    color: Colors.blue,
-                  ),
-                ),
+                btnPaste('Enter', nowCode),
                 SizedBox(
                   width: 10,
                 ),
-                Expanded(
-                  child: MaterialButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        'Clear',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    onPressed: () => clearAll(),
-                    color: Colors.blue,
-                  ),
-                ),
+                btnPaste('Clear', clearAll)
               ],
             ),
           ],
@@ -203,8 +179,32 @@ class _HomeState extends State<Home> {
     );
   }
 
+  final roundBorder =
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(15));
+
+  Widget btnPaste(String text, Function function) {
+    return Expanded(
+      child: RaisedButton(
+        shape: roundBorder,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            text,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+            ),
+          ),
+        ),
+        onPressed: () => function(),
+        color: Colors.white,
+      ),
+    );
+  }
+
   int m = 0;
   int n = 0;
+  double finalNodeTek = 0;
   List<List<String>> allValues = [];
 
   static const separate = ' ';
@@ -231,6 +231,10 @@ class _HomeState extends State<Home> {
 
         if (allValues.length == m) {
           pushOutput('Entered: $values');
+
+          changePlaceHolder('Enter final Node Tek');
+          finalNodeTek = double.tryParse(myController.text);
+
           pushOutput('Given Data: $allValues');
           changePlaceHolder('Processing...');
           disableField();
@@ -300,6 +304,7 @@ class _HomeState extends State<Home> {
       // end for each final node.
     });
 
-    pushOutput('Array Chains: $arrayChains');
+    pushOutput('Arrow Chains: $arrayChains');
+    changePlaceHolder('Finished!');
   }
 }
