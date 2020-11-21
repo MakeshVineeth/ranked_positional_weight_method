@@ -13,9 +13,6 @@ class _HomeState extends State<Home> {
   final myController = TextEditingController();
   String placeHolder = f1;
 
-  static const f1 = 'Enter m and n values.';
-  static const f2 = 'Enter Node, Final Node and Tek.';
-
   bool isEditable = true;
 
   @override
@@ -139,10 +136,13 @@ class _HomeState extends State<Home> {
     );
   }
 
+  static const f1 = 'Enter m and n values.';
+  static const f2 = 'Enter Node, Final Node and Tek.';
+  static const f3 = 'Enter Tek Value of Final Node';
+
   int m = 0;
   int n = 0;
   double finalNodeTek = 0;
-  bool finalNodeOver = false;
   List<List<String>> allValues = [];
 
   static const separate = ' ';
@@ -164,28 +164,27 @@ class _HomeState extends State<Home> {
     else if (placeHolder == f2) {
       List<String> values = myController.text.trim().split(separate);
 
-      if (values.length == 3 || finalNodeOver) {
+      if (values.length == 3) {
         allValues.add(values);
 
         if (allValues.length == m) {
           pushOutput('Entered: $values');
-
-          if (finalNodeOver == false) {
-            changePlaceHolder('Enter Tek Value of Final Node');
-            finalNodeOver = true;
-          } else {
-            finalNodeTek = double.tryParse(myController.text);
-            pushOutput('Entered Final Tek: $finalNodeTek');
-            pushOutput('Given Data: $allValues');
-            changePlaceHolder('Processing...');
-            disableField();
-            doWork();
-          }
+          changePlaceHolder('Enter Tek Value of Final Node');
         } else {
           pushOutput('Entered: $values');
           clearTextField();
         }
       }
+    }
+
+    // f3
+    else if (placeHolder == f3) {
+      finalNodeTek = double.tryParse(myController.text.trim());
+      pushOutput('Entered Final Tek: $finalNodeTek');
+      pushOutput('Given Data: $allValues');
+      changePlaceHolder('Processing...');
+      disableField();
+      doWork();
     }
   }
 

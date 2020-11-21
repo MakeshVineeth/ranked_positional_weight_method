@@ -16,7 +16,7 @@ class ListViewDesign extends StatelessWidget {
         child: ListView.separated(
           separatorBuilder: (context, index) => Divider(
             height: 30,
-            thickness: 1.5,
+            thickness: 1,
           ),
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
