@@ -262,12 +262,29 @@ class _HomeState extends State<Home> {
     uniqueList.sort();
     pushOutput('List of All Nodes: $uniqueList');
 
-    uniqueList.forEach((int mainNode) {
-      for (int i = 0; i < allValues.length; i++) {
-        int val = int.tryParse(allValues[i][0]);
+    List<List<String>> arrayChains = [];
 
-        if (val == mainNode) {}
+    uniqueList.forEach((int mainNode) {
+      List<String> temp = [];
+      int tempVal = mainNode;
+
+      while (true) {
+        for (int i = 0; i < allValues.length; i++) {
+          int val = int.tryParse(allValues[i][0]);
+
+          if (val == tempVal) {
+            temp.add('$val');
+            tempVal = int.tryParse(allValues[i][1]);
+          }
+        }
+
+        if (tempVal == uniqueList[uniqueList.length - 1]) {
+          arrayChains.add(temp);
+          break;
+        }
       }
     });
+
+    pushOutput('Array Chains: $arrayChains');
   }
 }
