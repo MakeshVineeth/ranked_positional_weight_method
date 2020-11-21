@@ -229,20 +229,28 @@ class _HomeState extends State<Home> {
       List<String> temp = [];
       int tempVal = mainNode;
 
+      List<int> indices = [];
       for (int i = 0; i < allValues.length; i++) {
-        for (int i = 0; i < allValues.length; i++) {
-          int val = int.tryParse(allValues[i][0]);
+        int val = int.tryParse(allValues[i][0]);
+        if (val == mainNode) indices.add(i);
+      }
 
-          if (val == tempVal) {
-            temp.add('$val');
-            tempVal = int.tryParse(allValues[i][1]);
+      for (int i = 0; i < indices.length; i++) {
+        for (int j = indices[i]; j < allValues.length; j++) {
+          for (int k = 0; k < allValues.length; k++) {
+            int val = int.tryParse(allValues[k][0]);
+
+            if (val == tempVal) {
+              temp.add('$val');
+              tempVal = int.tryParse(allValues[k][1]);
+            }
           }
-        }
 
-        if (tempVal == uniqueList[uniqueList.length - 1]) {
-          temp.add('${uniqueList[uniqueList.length - 1]}');
-          arrayChains.add(temp);
-          break;
+          if (tempVal == uniqueList[uniqueList.length - 1]) {
+            temp.add('${uniqueList[uniqueList.length - 1]}');
+            arrayChains.add(temp);
+            break;
+          }
         }
       }
 
