@@ -27,8 +27,7 @@ class ListViewDesign extends StatelessWidget {
               style: TextStyle(
                 backgroundColor: Colors.transparent,
                 fontWeight: FontWeight.w600,
-                fontSize: 18,
-                letterSpacing: 1,
+                fontSize: 16,
               ),
             );
           },

@@ -79,7 +79,7 @@ class _HomeState extends State<Home> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
             Expanded(
@@ -93,7 +93,7 @@ class _HomeState extends State<Home> {
             ),
             textFieldDesign(),
             SizedBox(
-              height: 10,
+              height: 5,
             ),
             Row(
               children: [
@@ -235,9 +235,11 @@ class _HomeState extends State<Home> {
         if (val == mainNode) indices.add(i);
       }
 
+      print(indices);
+
       for (int i = 0; i < indices.length; i++) {
         for (int j = indices[i]; j < allValues.length; j++) {
-          for (int k = 0; k < allValues.length; k++) {
+          for (int k = indices[i]; k < allValues.length; k++) {
             int val = int.tryParse(allValues[k][0]);
 
             if (val == tempVal) {
