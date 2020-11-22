@@ -79,7 +79,7 @@ class _HomeState extends State<Home> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: Common.scaffoldPadding,
         child: Column(
           children: [
             Expanded(
@@ -113,7 +113,7 @@ class _HomeState extends State<Home> {
   Widget textFieldDesign() {
     return Card(
       shape: Common.roundBorder,
-      elevation: 3,
+      elevation: Common.cardElevation,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: TextField(

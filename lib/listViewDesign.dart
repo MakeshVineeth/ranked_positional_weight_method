@@ -10,24 +10,34 @@ class ListViewDesign extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: Common.roundBorder,
-      elevation: 3,
+      elevation: Common.cardElevation,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: ListView.separated(
-          separatorBuilder: (context, index) => Divider(
-            height: 30,
-            thickness: 1,
-          ),
+        child: ListView.builder(
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           itemCount: output.length,
           itemBuilder: (context, index) {
-            return Text(
-              '${output[index].trim()}',
-              style: TextStyle(
-                backgroundColor: Colors.transparent,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+            return Card(
+              shape:
+                  RoundedRectangleBorder(borderRadius: Common.textCardBorder),
+              elevation: 1.5,
+              child: InkWell(
+                borderRadius: Common.textCardBorder,
+                onTap: () {},
+                child: IgnorePointer(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      '${output[index].trim()}',
+                      style: TextStyle(
+                        backgroundColor: Colors.transparent,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             );
           },
