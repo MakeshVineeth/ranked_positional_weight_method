@@ -51,7 +51,6 @@ class _HomeState extends State<Home> {
     setState(() {
       myController.clear();
       isEditable = true;
-      m = 0;
       n = 0;
       allValues.clear();
       output.clear();
@@ -125,7 +124,7 @@ class _HomeState extends State<Home> {
           controller: myController,
           enabled: isEditable,
           inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp("[0-9 ]"))
+            FilteringTextInputFormatter.allow(RegExp("[0-9 .]"))
           ],
           decoration: InputDecoration(
               border: InputBorder.none,
@@ -139,11 +138,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-  static const f1 = 'Enter m and n values.';
-  static const f2 = 'Enter Node, Final Node and Tek.';
+  static const f1 = 'Enter Number of Nodes.';
+  static const f2 = 'Enter Node, Final Node and Tek Value.';
   static const f3 = 'Enter Tek Value of Final Node';
 
-  int m = 0;
   int n = 0;
   double finalNodeTek = 0;
   List<List<String>> allValues = [];
@@ -154,13 +152,10 @@ class _HomeState extends State<Home> {
     String text = myController.text.trim();
     if (!Common.checkFormat(text)) {
       if (placeHolder == f1) {
-        List<String> values = text.split(separate);
+        n = int.tryParse(text);
 
-        if (values.length == 2) {
-          m = int.tryParse(values[0]);
-          n = int.tryParse(values[1]);
-
-          pushOutput('Entered: m = $m and n = $n');
+        if (n != 0 && n != null) {
+          pushOutput('Number of Nodes: $n');
           changePlaceHolder(f2);
         }
       }
@@ -172,11 +167,11 @@ class _HomeState extends State<Home> {
         if (values.length == 3) {
           allValues.add(values);
 
-          if (allValues.length == m) {
-            pushOutput('Entered: $values');
+          if (allValues.length == n) {
+            pushOutput('Data ${allValues.length}: $values');
             changePlaceHolder('Enter Tek Value of Final Node');
           } else {
-            pushOutput('Entered: $values');
+            pushOutput('Data ${allValues.length}: $values');
             clearTextField();
           }
         }
