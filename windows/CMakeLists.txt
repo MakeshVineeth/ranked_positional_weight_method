@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(rotation_positional_method LANGUAGES CXX)
+project(ranked_positional_method LANGUAGES CXX)
 
-set(BINARY_NAME "rotation_positional_method")
+set(BINARY_NAME "ranked_positional_method")
 
 cmake_policy(SET CMP0063 NEW)
 

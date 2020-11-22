@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Common {
-  static const title = 'Rotation Positional Method';
+  static const title = 'Line Balancing using RPW';
 
   static final roundBorder =
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(10));

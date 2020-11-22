@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rotation_positional_method/common.dart';
+import 'package:ranked_positional_method/common.dart';
 
 class ListViewDesign extends StatelessWidget {
   final List<String> output;

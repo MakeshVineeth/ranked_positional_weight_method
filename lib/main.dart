@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:rotation_positional_method/Home.dart';
-import 'package:rotation_positional_method/common.dart';
+import 'package:ranked_positional_method/Home.dart';
+import 'package:ranked_positional_method/common.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 void main() {

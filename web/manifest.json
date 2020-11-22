@@ -1,6 +1,6 @@
 {
-    "name": "rotation_positional_method",
-    "short_name": "rotation_positional_method",
+    "name": "ranked_positional_method",
+    "short_name": "ranked_positional_method",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.rotation_positional_method">
+    package="com.example.ranked_positional_method">
    <application
-        android:label="Rotation Positional Method"
+        android:label="Calculate RPW"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

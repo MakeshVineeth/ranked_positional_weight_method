@@ -1,4 +1,4 @@
-# rotation_positional_method
+# ranked_positional_method
 
 A new Flutter project.
 

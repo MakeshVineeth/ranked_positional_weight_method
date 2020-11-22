@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "rotation_positional_method")
-set(APPLICATION_ID "com.example.rotation_positional_method")
+set(BINARY_NAME "ranked_positional_method")
+set(APPLICATION_ID "com.example.ranked_positional_method")
 
 cmake_policy(SET CMP0063 NEW)
 

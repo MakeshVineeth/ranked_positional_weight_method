@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rotation_positional_method/btnDesign.dart';
-import 'package:rotation_positional_method/common.dart';
-import 'package:rotation_positional_method/listViewDesign.dart';
+import 'package:ranked_positional_method/btnDesign.dart';
+import 'package:ranked_positional_method/common.dart';
+import 'package:ranked_positional_method/listViewDesign.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 class Home extends StatefulWidget {

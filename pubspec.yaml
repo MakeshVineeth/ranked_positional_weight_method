@@ -1,4 +1,4 @@
-name: rotation_positional_method
+name: ranked_positional_method
 description: An App Made by Makesh Vineeth.
 
 # The following line prevents the package from being accidentally published to
@@ -33,10 +33,10 @@ dev_dependencies:
     sdk: flutter
 
 flutter_rename_app:
-  application_name: Rotation Positional Method
-  dart_package_name: rotation_positional_method
-  application_id: com.rotation.positional.method
-  bundle_id: com.rotation.positional.method
+  application_name: Calculate RPW
+  dart_package_name: ranked_positional_method
+  application_id: com.makeshtech.rpw
+  bundle_id: com.makeshtech.rpw
 
 flutter_icons:
   android: "ic_launcher"
