@@ -14,6 +14,7 @@ class RootApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ThemeProvider(
       saveThemesOnChange: true,
+      defaultThemeId: 'light_theme',
       themes: [
         AppTheme(
           id: 'dark_theme',
