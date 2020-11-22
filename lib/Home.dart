@@ -149,6 +149,8 @@ class _HomeState extends State<Home> {
   int n = 0;
   double finalNodeTek = 0;
   List<List<String>> allValues = [];
+  List<int> ls1 = [];
+  List<int> ls2 = [];
 
   static const separate = ' ';
 
@@ -170,6 +172,8 @@ class _HomeState extends State<Home> {
 
         if (values.length == 3) {
           allValues.add(values);
+          ls1.add(int.tryParse(values[0]));
+          ls2.add(int.tryParse(values[1]));
 
           if (allValues.length == n) {
             pushOutput('Data ${allValues.length}: $values');
@@ -196,14 +200,10 @@ class _HomeState extends State<Home> {
   }
 
   void doWork() {
-    List<int> uniqueList = [];
-
-    allValues.forEach((innerList) {
-      int val = int.tryParse(innerList.elementAt(0));
-      uniqueList.add(val);
-      val = int.tryParse(innerList.elementAt(1));
-      uniqueList.add(val);
-    });
+    List<int> uniqueList = [
+      ...{...ls1},
+      ...{...ls2}
+    ];
 
     uniqueList = [
       ...{...uniqueList}
