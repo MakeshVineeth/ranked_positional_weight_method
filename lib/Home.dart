@@ -173,9 +173,9 @@ class _HomeState extends State<Home> {
 
         if (values.length == 3) {
           allValues.add(values);
-          ls1.add(int.tryParse(values[0]));
-          ls2.add(int.tryParse(values[1]));
-          ls3.add(double.tryParse(values[2]));
+          ls1.add(int.tryParse(values.elementAt(0)));
+          ls2.add(int.tryParse(values.elementAt(1)));
+          ls3.add(double.tryParse(values.elementAt(2)));
 
           if (allValues.length == n) {
             pushOutput('Data ${allValues.length}: $values');
@@ -238,8 +238,8 @@ class _HomeState extends State<Home> {
 
       for (int count = 0; count < uniqueList.length - 1; count++) {
         for (int i = 0; i < ls1.length; i++) {
-          if (ls1[i] == uniqueList[count]) {
-            withTeks.add([ls1[i], ls3[i]]);
+          if (ls1.elementAt(i) == uniqueList.elementAt(count)) {
+            withTeks.add([ls1.elementAt(i), ls3.elementAt(i)]);
             break;
           }
         }
@@ -269,6 +269,21 @@ class _HomeState extends State<Home> {
 
       displayList('Arrow Chains', arrowChains);
 
+      List<double> rpwList = [];
+      arrowChains.forEach((list) {
+        double val = 0.0;
+        list.forEach((num) {
+          for (int i = 0; i < withTeks.length; i++) {
+            int cur = withTeks.elementAt(i).elementAt(0);
+            if (num == cur) {
+              val += withTeks.elementAt(i).elementAt(1);
+            }
+          }
+        });
+        rpwList.add(val);
+        pushOutput('RPW${list.elementAt(0)}: $val');
+      });
+
       changePlaceHolder('Finished!');
     } catch (e) {
       clearAll();
@@ -282,10 +297,10 @@ class _HomeState extends State<Home> {
     chain.add(currentNode);
 
     for (int count = 0; count < ls1.length; count++) {
-      if (currentNode == ls1[count]) {
-        chain.add(ls2[count]);
-        if (ls2[count] == lastElement) break;
-        chain.addAll(getArrowChain(ls2[count]));
+      if (currentNode == ls1.elementAt(count)) {
+        chain.add(ls2.elementAt(count));
+        if (ls2.elementAt(count) == lastElement) break;
+        chain.addAll(getArrowChain(ls2.elementAt(count)));
       }
     }
 
