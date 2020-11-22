@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rotation_positional_method/btnDesign.dart';
 import 'package:rotation_positional_method/common.dart';
 import 'package:rotation_positional_method/listViewDesign.dart';
@@ -123,6 +124,9 @@ class _HomeState extends State<Home> {
           ),
           controller: myController,
           enabled: isEditable,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp("[0-9 ]"))
+          ],
           decoration: InputDecoration(
               border: InputBorder.none,
               hintText: placeHolder,
@@ -147,10 +151,10 @@ class _HomeState extends State<Home> {
   static const separate = ' ';
 
   void nowCode() {
-    String text = myController.text;
+    String text = myController.text.trim();
     if (!Common.checkFormat(text)) {
       if (placeHolder == f1) {
-        List<String> values = text.trim().split(separate);
+        List<String> values = text.split(separate);
 
         if (values.length == 2) {
           m = int.tryParse(values[0]);
@@ -163,7 +167,7 @@ class _HomeState extends State<Home> {
 
       // f2
       else if (placeHolder == f2) {
-        List<String> values = text.trim().split(separate);
+        List<String> values = text.split(separate);
 
         if (values.length == 3) {
           allValues.add(values);
@@ -180,7 +184,7 @@ class _HomeState extends State<Home> {
 
       // f3
       else if (placeHolder == f3) {
-        finalNodeTek = double.tryParse(text.trim());
+        finalNodeTek = double.tryParse(text);
         if (finalNodeTek != null) {
           pushOutput('Entered Final Tek: $finalNodeTek');
           pushOutput('Given Data: $allValues');

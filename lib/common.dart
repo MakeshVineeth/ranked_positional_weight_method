@@ -40,11 +40,15 @@ class Common {
   static bool checkFormat(String text) {
     String ls = '0123456789. ';
     List<String> lsArray = ls.split('');
-
-    text = text.trim();
     bool isIncorrect = false;
     for (int i = 0; i < text.length; i++) {
-      if (!lsArray.contains(text[i])) {
+      if (text[0] == ' ') {
+        isIncorrect = true;
+        break;
+      } else if (text[i] == ' ' && i - 1 >= 0 && text[i - 1] == ' ') {
+        isIncorrect = true;
+        break;
+      } else if (!lsArray.contains(text[i])) {
         isIncorrect = true;
         break;
       }
