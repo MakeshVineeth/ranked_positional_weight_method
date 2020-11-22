@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 class Common {
   static const title = 'Line Balancing using RPW';
+  static const legals =
+      'An App that calculates the Rank Positional Weight Method (RPW), it can be used to develop and balance an assembly line.';
+  static const ver = '1.0.0';
 
   static final roundBorder =
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(10));

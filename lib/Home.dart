@@ -4,6 +4,7 @@ import 'package:ranked_positional_method/btnDesign.dart';
 import 'package:ranked_positional_method/common.dart';
 import 'package:ranked_positional_method/listViewDesign.dart';
 import 'package:theme_provider/theme_provider.dart';
+import 'package:ranked_positional_method/aboutBtn.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -77,7 +78,10 @@ class _HomeState extends State<Home> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [CycleThemeIconButton()],
+        actions: [
+          CycleThemeIconButton(),
+          AboutApp(),
+        ],
       ),
       body: Padding(
         padding: Common.scaffoldPadding,
