@@ -151,6 +151,7 @@ class _HomeState extends State<Home> {
   List<List<String>> allValues = [];
   List<int> ls1 = [];
   List<int> ls2 = [];
+  List<double> ls3 = [];
 
   static const separate = ' ';
 
@@ -174,6 +175,7 @@ class _HomeState extends State<Home> {
           allValues.add(values);
           ls1.add(int.tryParse(values[0]));
           ls2.add(int.tryParse(values[1]));
+          ls3.add(double.tryParse(values[2]));
 
           if (allValues.length == n) {
             pushOutput('Data ${allValues.length}: $values');
@@ -190,7 +192,9 @@ class _HomeState extends State<Home> {
         finalNodeTek = double.tryParse(text);
         if (finalNodeTek != null) {
           pushOutput('Entered Final Tek: $finalNodeTek');
-          pushOutput('Given Data: $allValues');
+
+          displayList('Given Data', allValues);
+
           changePlaceHolder('Processing...');
           disableField();
           doWork();
@@ -201,48 +205,76 @@ class _HomeState extends State<Home> {
 
   List<int> uniqueList = [];
   int lastElement;
+  List<List<dynamic>> withTeks = [];
+
+  void displayList(String title, List list) {
+    String outStr = '';
+    list.forEach((val) {
+      outStr = outStr + '$val, ';
+    });
+
+    removeLastDisplay(title, outStr);
+  }
+
+  void removeLastDisplay(String title, String outStr) {
+    outStr = outStr.trim();
+    outStr = outStr.substring(0, outStr.length - 1);
+    pushOutput('$title: $outStr');
+  }
 
   void doWork() {
-    uniqueList = [
-      ...{...ls1},
-      ...{...ls2}
-    ];
+    try {
+      uniqueList = [
+        ...{...ls1},
+        ...{...ls2}
+      ];
 
-    uniqueList = [
-      ...{...uniqueList}
-    ];
+      uniqueList = [
+        ...{...uniqueList}
+      ];
 
-    uniqueList.sort();
-    lastElement = uniqueList[uniqueList.length - 1];
+      uniqueList.sort();
+      lastElement = uniqueList[uniqueList.length - 1];
 
-    List<String> out1 = [];
-    uniqueList.forEach((int v) {
-      for (int i = 0; i < allValues.length; i++) {
-        int val = int.tryParse(allValues[i][0]);
-        if (val == v) {
-          out1.add('N${allValues[i][0]}: ${allValues[i][2]}');
-          break;
+      for (int count = 0; count < uniqueList.length - 1; count++) {
+        for (int i = 0; i < ls1.length; i++) {
+          if (ls1[i] == uniqueList[count]) {
+            withTeks.add([ls1[i], ls3[i]]);
+            break;
+          }
         }
       }
-    });
 
-    out1.add('N$lastElement: $finalNodeTek');
-    pushOutput('List of Nodes with Tek: $out1');
+      withTeks.add([lastElement, finalNodeTek]);
 
-    List<List<int>> arrowChains = [];
-    uniqueList.forEach((int currentNode) {
-      if (currentNode != lastElement) {
-        List<int> arrow = getArrowChain(currentNode);
-        arrow = [
-          ...{...arrow}
-        ];
-        arrow.sort();
-        arrowChains.add(arrow);
-      }
-    });
+      String outStr = '';
 
-    pushOutput('Arrow Chains: $arrowChains');
-    changePlaceHolder('Finished!');
+      withTeks.forEach((val) {
+        outStr = outStr + 'N${val[0]} = ' + '${val[1]}, ';
+      });
+
+      removeLastDisplay('List of Nodes with Tek', outStr);
+
+      List<List<int>> arrowChains = [];
+      uniqueList.forEach((int currentNode) {
+        if (currentNode != lastElement) {
+          List<int> arrow = getArrowChain(currentNode);
+          arrow = [
+            ...{...arrow}
+          ];
+          arrow.sort();
+          arrowChains.add(arrow);
+        }
+      });
+
+      displayList('Arrow Chains', arrowChains);
+
+      changePlaceHolder('Finished!');
+    } catch (e) {
+      clearAll();
+      changePlaceHolder('Error!');
+      disableField();
+    }
   }
 
   List<int> getArrowChain(int currentNode) {
