@@ -25,7 +25,6 @@ class BtnDesign extends StatelessWidget {
             ),
           ),
           onPressed: () => function(),
-          color: Colors.white,
         ),
       ),
     );

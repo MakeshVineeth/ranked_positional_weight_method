@@ -9,8 +9,6 @@ class ListViewDesign extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: Common.roundBorder,
-      elevation: Common.cardElevation,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: ListView.builder(

@@ -12,11 +12,10 @@ class RootApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      themeMode: ThemeMode.light,
       title: Common.title,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      themeMode: ThemeMode.system,
+      darkTheme: Common.dataTheme(context, Brightness.dark),
+      theme: Common.dataTheme(context, Brightness.light),
       home: Home(),
       debugShowCheckedModeBanner: false,
     );

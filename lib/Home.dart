@@ -66,17 +66,16 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           Common.title,
           style: TextStyle(
-            color: Colors.black,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: Colors.white,
-        centerTitle: true,
       ),
       body: Padding(
         padding: Common.scaffoldPadding,
@@ -112,8 +111,6 @@ class _HomeState extends State<Home> {
 
   Widget textFieldDesign() {
     return Card(
-      shape: Common.roundBorder,
-      elevation: Common.cardElevation,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: TextField(
