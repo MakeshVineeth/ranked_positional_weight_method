@@ -199,8 +199,11 @@ class _HomeState extends State<Home> {
     }
   }
 
+  List<int> uniqueList = [];
+  int lastElement;
+
   void doWork() {
-    List<int> uniqueList = [
+    uniqueList = [
       ...{...ls1},
       ...{...ls2}
     ];
@@ -210,62 +213,50 @@ class _HomeState extends State<Home> {
     ];
 
     uniqueList.sort();
+    lastElement = uniqueList[uniqueList.length - 1];
 
     List<String> out1 = [];
     uniqueList.forEach((int v) {
       for (int i = 0; i < allValues.length; i++) {
         int val = int.tryParse(allValues[i][0]);
         if (val == v) {
-          out1.add('${allValues[i][0]} : ${allValues[i][2]}');
+          out1.add('N${allValues[i][0]}: ${allValues[i][2]}');
           break;
         }
       }
     });
 
-    out1.add('${uniqueList[uniqueList.length - 1]} : $finalNodeTek');
+    out1.add('N$lastElement: $finalNodeTek');
     pushOutput('List of Nodes with Tek: $out1');
 
-    List<List<String>> arrayChains = [];
-
-    // m: 5, [126][231][346][463][673] chains: [123467][23467][3467][467][67][7]
-
-    uniqueList.forEach((int mainNode) {
-      // get chains for each node.
-      List<String> temp = [];
-      int tempVal = mainNode;
-
-      List<int> indices = [];
-      for (int i = 0; i < allValues.length; i++) {
-        int val = int.tryParse(allValues[i][0]);
-        if (val == mainNode) indices.add(i);
+    List<List<int>> arrowChains = [];
+    uniqueList.forEach((int currentNode) {
+      if (currentNode != lastElement) {
+        List<int> arrow = getArrowChain(currentNode);
+        arrow = [
+          ...{...arrow}
+        ];
+        arrow.sort();
+        arrowChains.add(arrow);
       }
-
-      print(indices);
-
-      for (int i = 0; i < indices.length; i++) {
-        for (int j = indices[i]; j < allValues.length; j++) {
-          for (int k = indices[i]; k < allValues.length; k++) {
-            int val = int.tryParse(allValues[k][0]);
-
-            if (val == tempVal) {
-              temp.add('$val');
-              tempVal = int.tryParse(allValues[k][1]);
-            }
-          }
-
-          if (tempVal == uniqueList[uniqueList.length - 1]) {
-            temp.add('${uniqueList[uniqueList.length - 1]}');
-            arrayChains.add(temp);
-            break;
-          }
-        }
-      }
-
-      // end for each final node.
     });
 
-    // arrayChains.removeLast();
-    pushOutput('Arrow Chains: $arrayChains');
+    pushOutput('Arrow Chains: $arrowChains');
     changePlaceHolder('Finished!');
+  }
+
+  List<int> getArrowChain(int currentNode) {
+    List<int> chain = [];
+    chain.add(currentNode);
+
+    for (int count = 0; count < ls1.length; count++) {
+      if (currentNode == ls1[count]) {
+        chain.add(ls2[count]);
+        if (ls2[count] == lastElement) break;
+        chain.addAll(getArrowChain(ls2[count]));
+      }
+    }
+
+    return chain;
   }
 }
