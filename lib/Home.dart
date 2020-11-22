@@ -147,44 +147,47 @@ class _HomeState extends State<Home> {
   static const separate = ' ';
 
   void nowCode() {
-    if (placeHolder == f1) {
-      List<String> values = myController.text.trim().split(separate);
+    String text = myController.text;
+    if (!Common.checkFormat(text)) {
+      if (placeHolder == f1) {
+        List<String> values = text.trim().split(separate);
 
-      if (values.length == 2) {
-        m = int.tryParse(values[0]);
-        n = int.tryParse(values[1]);
+        if (values.length == 2) {
+          m = int.tryParse(values[0]);
+          n = int.tryParse(values[1]);
 
-        pushOutput('Entered: m = $m and n = $n');
-        changePlaceHolder(f2);
-      }
-    }
-
-    // f2
-    else if (placeHolder == f2) {
-      List<String> values = myController.text.trim().split(separate);
-
-      if (values.length == 3) {
-        allValues.add(values);
-
-        if (allValues.length == m) {
-          pushOutput('Entered: $values');
-          changePlaceHolder('Enter Tek Value of Final Node');
-        } else {
-          pushOutput('Entered: $values');
-          clearTextField();
+          pushOutput('Entered: m = $m and n = $n');
+          changePlaceHolder(f2);
         }
       }
-    }
 
-    // f3
-    else if (placeHolder == f3) {
-      finalNodeTek = double.tryParse(myController.text.trim());
-      if (finalNodeTek != null) {
-        pushOutput('Entered Final Tek: $finalNodeTek');
-        pushOutput('Given Data: $allValues');
-        changePlaceHolder('Processing...');
-        disableField();
-        doWork();
+      // f2
+      else if (placeHolder == f2) {
+        List<String> values = text.trim().split(separate);
+
+        if (values.length == 3) {
+          allValues.add(values);
+
+          if (allValues.length == m) {
+            pushOutput('Entered: $values');
+            changePlaceHolder('Enter Tek Value of Final Node');
+          } else {
+            pushOutput('Entered: $values');
+            clearTextField();
+          }
+        }
+      }
+
+      // f3
+      else if (placeHolder == f3) {
+        finalNodeTek = double.tryParse(text.trim());
+        if (finalNodeTek != null) {
+          pushOutput('Entered Final Tek: $finalNodeTek');
+          pushOutput('Given Data: $allValues');
+          changePlaceHolder('Processing...');
+          disableField();
+          doWork();
+        }
       }
     }
   }

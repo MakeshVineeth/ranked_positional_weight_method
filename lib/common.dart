@@ -36,4 +36,19 @@ class Common {
       ),
     );
   }
+
+  static bool checkFormat(String text) {
+    String ls = '0123456789. ';
+    List<String> lsArray = ls.split('');
+
+    text = text.trim();
+    bool isIncorrect = false;
+    for (int i = 0; i < text.length; i++) {
+      if (!lsArray.contains(text[i])) {
+        isIncorrect = true;
+        break;
+      }
+    }
+    return isIncorrect;
+  }
 }
