@@ -24,6 +24,9 @@ class Common {
         centerTitle: true,
         brightness: brightness,
         color: isDark ? Theme.of(context).appBarTheme.color : bgWhite,
+        iconTheme: IconThemeData(
+          color: isDark ? Colors.yellow : Colors.blue,
+        ),
       ),
       applyElevationOverlayColor: isDark,
       cardTheme: CardTheme(

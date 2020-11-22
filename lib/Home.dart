@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rotation_positional_method/btnDesign.dart';
 import 'package:rotation_positional_method/common.dart';
 import 'package:rotation_positional_method/listViewDesign.dart';
+import 'package:theme_provider/theme_provider.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -76,6 +77,7 @@ class _HomeState extends State<Home> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [CycleThemeIconButton()],
       ),
       body: Padding(
         padding: Common.scaffoldPadding,
