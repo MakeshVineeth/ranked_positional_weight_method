@@ -17,6 +17,7 @@ class ListViewDesign extends StatelessWidget {
           itemCount: output.length,
           itemBuilder: (context, index) {
             return Card(
+              color: Theme.of(context).scaffoldBackgroundColor,
               shape:
                   RoundedRectangleBorder(borderRadius: Common.textCardBorder),
               elevation: 1.5,

@@ -9,26 +9,29 @@ class Common {
   static final roundBorder =
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(10));
 
-  static const scaffoldPadding = EdgeInsets.all(12.0);
+  static const scaffoldPadding = EdgeInsets.all(15.0);
   static final textCardBorder = BorderRadius.circular(5);
 
   static ThemeData dataTheme(BuildContext context, Brightness brightness) {
     bool isDark = brightness == Brightness.dark;
     Color bgWhite = Colors.white;
     Color bgBlack = Colors.grey[900];
+    Color colorFgBlack = Colors.yellow;
+    Color colorFgWhite = Colors.indigo;
+    Color scaffoldBgBlack = Colors.grey[850];
 
     return ThemeData(
-      primarySwatch: isDark ? Colors.blue : Colors.red,
+      primarySwatch: isDark ? colorFgBlack : colorFgWhite,
       brightness: brightness,
       buttonColor: isDark ? bgBlack : bgWhite,
-      scaffoldBackgroundColor: isDark ? Colors.grey[850] : bgWhite,
+      scaffoldBackgroundColor: isDark ? scaffoldBgBlack : bgWhite,
       backgroundColor: isDark ? Theme.of(context).backgroundColor : bgWhite,
       appBarTheme: AppBarTheme(
         centerTitle: true,
         brightness: brightness,
         color: isDark ? Theme.of(context).appBarTheme.color : bgWhite,
         iconTheme: IconThemeData(
-          color: isDark ? Colors.yellow : Colors.blue,
+          color: isDark ? colorFgBlack : colorFgWhite,
         ),
         textTheme: TextTheme(
           headline6: Theme.of(context).textTheme.headline6.copyWith(

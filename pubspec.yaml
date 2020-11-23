@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.1
+  flutter_fadein: ^1.1.1
   flutter_launcher_icons: ^0.8.1
   flutter_rename_app: ^1.0.0
   peanut: ^3.5.1

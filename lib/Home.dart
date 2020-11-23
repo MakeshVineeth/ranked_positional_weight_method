@@ -67,6 +67,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -79,31 +80,39 @@ class _HomeState extends State<Home> {
       ),
       body: Padding(
         padding: Common.scaffoldPadding,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 3,
-              child: ListViewDesign(
-                output: output,
-              ),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            textFieldDesign(),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
+        child: Center(
+          child: Container(
+            width: width > 700 ? width / 1.5 : width,
+            child: Column(
               children: [
-                BtnDesign(text: 'Enter', function: nowCode),
-                SizedBox(
-                  width: 10,
+                Expanded(
+                  flex: 3,
+                  child: ListViewDesign(
+                    output: output,
+                  ),
                 ),
-                BtnDesign(text: 'Clear', function: clearAll)
+                SizedBox(
+                  height: 5,
+                ),
+                textFieldDesign(),
+                SizedBox(
+                  height: 5,
+                ),
+                Container(
+                  width: width > 500 ? width / 2 : width,
+                  child: Row(
+                    children: [
+                      BtnDesign(text: 'Enter', function: nowCode),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      BtnDesign(text: 'Clear', function: clearAll)
+                    ],
+                  ),
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

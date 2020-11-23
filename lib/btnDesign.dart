@@ -13,14 +13,16 @@ class BtnDesign extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.all(3),
         child: RaisedButton(
+          elevation: 5,
           shape: Common.roundBorder,
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(14.0),
             child: Text(
               text,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize: 16,
+                fontSize: 16.5,
+                color: Theme.of(context).appBarTheme.iconTheme.color,
               ),
             ),
           ),
