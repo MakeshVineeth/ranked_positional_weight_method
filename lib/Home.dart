@@ -254,6 +254,8 @@ class _HomeState extends State<Home> {
 
       withTeks.add([lastElement, finalNodeTek]);
 
+      if (withTeks.length != uniqueList.length) throw Exception;
+
       String outStr = '';
 
       withTeks.forEach((val) {
@@ -295,6 +297,8 @@ class _HomeState extends State<Home> {
     } catch (e) {
       clearAll();
       changePlaceHolder('Error!');
+      pushOutput(
+          'Error. Please make sure all nodes are connected to a single node in the end');
       disableField();
     }
   }
