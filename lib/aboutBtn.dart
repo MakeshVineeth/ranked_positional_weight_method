@@ -9,8 +9,9 @@ class AboutApp extends StatelessWidget {
         context: context,
         applicationIcon: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ImageIcon(
-            AssetImage('assets/logo.png'),
+          child: Image(
+            image: AssetImage('assets/logo.png'),
+            width: 40,
           ),
         ),
         applicationName: Common.title,

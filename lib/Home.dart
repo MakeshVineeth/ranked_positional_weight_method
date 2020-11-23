@@ -71,12 +71,6 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text(
           Common.title,
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.black
-                : Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
         ),
         actions: [
           CycleThemeIconButton(),
