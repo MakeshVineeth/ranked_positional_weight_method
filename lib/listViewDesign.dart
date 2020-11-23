@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:ranked_positional_method/common.dart';
+import 'package:clipboard/clipboard.dart';
 
 class ListViewDesign extends StatelessWidget {
   final List<String> output;
+  final SnackBar snackBar = SnackBar(
+    content: Text('Copied to Clipboard!'),
+  );
 
-  const ListViewDesign({@required this.output});
+  ListViewDesign({@required this.output});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,12 @@ class ListViewDesign extends StatelessWidget {
                 elevation: 1.5,
                 child: InkWell(
                   borderRadius: Common.textCardBorder,
-                  onTap: () {},
+                  onTap: () {
+                    FlutterClipboard.copy('${output[index].trim()}')
+                        .then((value) {
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    });
+                  },
                   child: IgnorePointer(
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
