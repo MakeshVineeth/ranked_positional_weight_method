@@ -292,9 +292,24 @@ class _HomeState extends State<Home> {
         rpwList.add(val);
         pushOutput('RPW${list.elementAt(0)}: $val');
       });
+      rpwList.add(finalNodeTek);
+      pushOutput('RPW$lastElement: $finalNodeTek');
+
+      List<List<dynamic>> table1 = [];
+      for (int i = 0; i < withTeks.length; i++) {
+        List temp = [
+          withTeks[i][0],
+          withTeks[i][1],
+          rpwList[i],
+          if (i < arrowChains.length) arrowChains[i]
+        ];
+        table1.add(temp);
+        pushOutput('$temp');
+      }
 
       changePlaceHolder('Finished!');
     } catch (e) {
+      print(e);
       clearAll();
       changePlaceHolder('Error!');
       pushOutput(
