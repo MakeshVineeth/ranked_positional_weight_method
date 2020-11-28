@@ -315,10 +315,7 @@ class _HomeState extends State<Home> {
         arrowChains.forEach((eachChain) {
           int index = eachChain.indexOf(node);
 
-          if (index > 0) {
-            List<int> temp = eachChain.getRange(0, index).toList();
-            chain.addAll(temp);
-          }
+          if (index > 0) chain.add(eachChain.elementAt(index - 1));
         });
 
         if (chain.length > 1) {
