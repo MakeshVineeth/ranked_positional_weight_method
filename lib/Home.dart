@@ -13,7 +13,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<String> output = [];
+  List<dynamic> output = [];
   final myController = TextEditingController();
   String placeHolder = f1;
 
@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
-  void pushOutput(String val) {
+  void pushOutput(dynamic val) {
     setState(() {
       output.add(val);
     });
@@ -42,6 +42,10 @@ class _HomeState extends State<Home> {
       placeHolder = val;
     });
   }
+
+  void newSection() => pushOutput(SizedBox(
+        height: 30,
+      ));
 
   void clearTextField() {
     setState(() {
@@ -170,6 +174,7 @@ class _HomeState extends State<Home> {
 
         if (n != 0 && n != null) {
           pushOutput('Number of Nodes: $n');
+          newSection();
           changePlaceHolder(f2);
         }
       }
@@ -199,6 +204,7 @@ class _HomeState extends State<Home> {
         finalNodeTek = double.tryParse(text);
         if (finalNodeTek != null) {
           pushOutput('Entered Final Tek: $finalNodeTek');
+          newSection();
 
           displayList('Given Data', allValues);
 
@@ -277,6 +283,7 @@ class _HomeState extends State<Home> {
       });
 
       displayList('Arrow Chains', arrowChains);
+      newSection();
 
       List<double> rpwList = [];
       arrowChains.forEach((list) {
@@ -294,14 +301,20 @@ class _HomeState extends State<Home> {
       });
       rpwList.add(finalNodeTek);
       pushOutput('RPW$lastElement: $finalNodeTek');
+      newSection();
 
       List<List<dynamic>> table1 = []; // list: [node tek rpw chain]
       for (int i = 0; i < withTeks.length; i++) {
         List<int> chain = [];
         int node = withTeks[i][0];
 
+        if (node == 4) {
+          print('');
+        }
+
         arrowChains.forEach((eachChain) {
           int index = eachChain.indexOf(node);
+
           if (index > 0) {
             List<int> temp = eachChain.getRange(0, index).toList();
             chain.addAll(temp);
