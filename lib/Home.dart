@@ -295,17 +295,52 @@ class _HomeState extends State<Home> {
       rpwList.add(finalNodeTek);
       pushOutput('RPW$lastElement: $finalNodeTek');
 
-      List<List<dynamic>> table1 = [];
+      List<List<dynamic>> table1 = []; // list: [node tek rpw chain]
       for (int i = 0; i < withTeks.length; i++) {
+        List<int> chain = [];
+        int node = withTeks[i][0];
+
+        arrowChains.forEach((eachChain) {
+          int index = eachChain.indexOf(node);
+          if (index > 0) {
+            List<int> temp = eachChain.getRange(0, index).toList();
+            chain.addAll(temp);
+          }
+        });
+
+        if (chain.length > 1) {
+          chain = [
+            ...{...chain}
+          ];
+          chain.sort((b, a) => a.compareTo(b));
+        }
+
         List temp = [
-          withTeks[i][0],
+          node,
           withTeks[i][1],
           rpwList[i],
-          if (i < arrowChains.length) arrowChains[i]
+          if (chain.length > 0) chain,
         ];
         table1.add(temp);
-        pushOutput('$temp');
       }
+
+      table1.sort((b, a) {
+        double v1 = b.elementAt(2);
+        double v2 = a.elementAt(2);
+        return v2.compareTo(v1);
+      });
+
+      table1.forEach((list) {
+        List<int> pre = [];
+        if (list.length > 3) pre.addAll(list.elementAt(3));
+        String common =
+            'Node: ${list.elementAt(0)} Tek: ${list.elementAt(1)} RPW: ${list.elementAt(2)}';
+
+        if (pre.isNotEmpty)
+          pushOutput('$common Predecessors: $pre');
+        else
+          pushOutput(common);
+      });
 
       changePlaceHolder('Finished!');
     } catch (e) {
