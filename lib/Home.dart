@@ -355,13 +355,13 @@ class _HomeState extends State<Home> {
       });
       newSection();
 
-      double time = 1.0;
+      double time = 1.5;
       List<List<dynamic>> rangeIn = [];
       List<List<dynamic>> rangeOut = [];
 
       table1.forEach((eachList) {
         double time1 = eachList.elementAt(1);
-        if (time1 < time)
+        if (time1 <= time)
           rangeIn.add(eachList);
         else
           rangeOut.add(eachList);
@@ -372,17 +372,20 @@ class _HomeState extends State<Home> {
       while (rangeIn.length > 0) {
         stations.add([curStation, [], 0.0]);
 
-        for (int i = 0; i < rangeIn.length; i++) {
+        for (int i = 0; i < rangeIn.length;) {
           double sum = stations.last.last;
           sum += rangeIn.elementAt(i).elementAt(1);
           if (sum <= time) {
             stations.last.last = sum;
             stations.last.elementAt(1).add(rangeIn.elementAt(i).elementAt(0));
             rangeIn.removeAt(i);
+          } else {
+            i++;
           }
         }
 
-        pushOutput('Station: $curStation Done: ${stations.last.elementAt(1)} Sum: ${stations.last.last}');
+        pushOutput(
+            'Station: $curStation Done: ${stations.last.elementAt(1)} Sum: ${stations.last.last}');
         curStation++;
       }
 
