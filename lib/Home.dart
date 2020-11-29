@@ -16,16 +16,19 @@ class _HomeState extends State<Home> {
   List<dynamic> output = [];
   final myController = TextEditingController();
   String placeHolder = f1;
+  FocusNode focusNode;
 
   bool isEditable = true;
 
   @override
   void initState() {
     super.initState();
+    focusNode = FocusNode();
   }
 
   @override
   void dispose() {
+    focusNode.dispose();
     myController.dispose();
     super.dispose();
   }
@@ -141,6 +144,11 @@ class _HomeState extends State<Home> {
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp("[0-9 .]"))
           ],
+          focusNode: focusNode,
+          onSubmitted: (value) {
+            nowCode();
+            focusNode.requestFocus();
+          },
           decoration: InputDecoration(
               border: InputBorder.none,
               hintText: placeHolder,
