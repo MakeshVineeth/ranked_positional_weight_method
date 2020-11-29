@@ -354,6 +354,22 @@ class _HomeState extends State<Home> {
           pushOutput(common);
       });
 
+      double time = 1.0;
+      List<List<dynamic>> rangeIn = [];
+      List<List<dynamic>> rangeOut = [];
+      table1.forEach((eachList) {
+        double time1 = eachList.elementAt(1);
+        if (time1 < time)
+          rangeIn.add(eachList);
+        else
+          rangeOut.add(eachList);
+      });
+
+      int stationsCount;
+      while (true) {
+        stationsCount++;
+      }
+
       changePlaceHolder('Finished!');
     } catch (e) {
       print(e);
