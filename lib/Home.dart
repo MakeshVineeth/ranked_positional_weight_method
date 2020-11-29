@@ -369,6 +369,9 @@ class _HomeState extends State<Home> {
 
       int curStation = 1;
       List<List<dynamic>> stations = [];
+      List<int> completed = [];
+      List<List<dynamic>> dependsOnBig = [];
+
       while (rangeIn.length > 0) {
         stations.add([curStation, [], 0.0]);
 
@@ -377,6 +380,7 @@ class _HomeState extends State<Home> {
           sum += rangeIn.elementAt(i).elementAt(1);
           if (sum <= time) {
             stations.last.last = sum;
+            completed.add(rangeIn.elementAt(i).first);
             stations.last.elementAt(1).add(rangeIn.elementAt(i).elementAt(0));
             rangeIn.removeAt(i);
           } else {
