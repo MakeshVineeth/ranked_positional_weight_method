@@ -357,6 +357,8 @@ class _HomeState extends State<Home> {
       double time = 1.0;
       List<List<dynamic>> rangeIn = [];
       List<List<dynamic>> rangeOut = [];
+      List<List<dynamic>> arr = List.from(table1);
+
       table1.forEach((eachList) {
         double time1 = eachList.elementAt(1);
         if (time1 < time)
@@ -365,8 +367,17 @@ class _HomeState extends State<Home> {
           rangeOut.add(eachList);
       });
 
-      int stationsCount;
-      while (true) {
+      int stationsCount = 0;
+      while (arr.length > 0) {
+        double sum = 0;
+
+        for (int i = 0; i < arr.length; i++) {
+          sum += arr.elementAt(i).elementAt(1);
+          if (sum > time) {
+            
+            break;
+          }
+        }
         stationsCount++;
       }
 
