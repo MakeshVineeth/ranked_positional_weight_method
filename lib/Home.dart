@@ -353,11 +353,11 @@ class _HomeState extends State<Home> {
         else
           pushOutput(common);
       });
+      newSection();
 
       double time = 1.0;
       List<List<dynamic>> rangeIn = [];
       List<List<dynamic>> rangeOut = [];
-      List<List<dynamic>> arr = List.from(table1);
 
       table1.forEach((eachList) {
         double time1 = eachList.elementAt(1);
@@ -367,18 +367,23 @@ class _HomeState extends State<Home> {
           rangeOut.add(eachList);
       });
 
-      int stationsCount = 0;
-      while (arr.length > 0) {
-        double sum = 0;
+      int curStation = 1;
+      List<List<dynamic>> stations = [];
+      while (rangeIn.length > 0) {
+        stations.add([curStation, [], 0.0]);
 
-        for (int i = 0; i < arr.length; i++) {
-          sum += arr.elementAt(i).elementAt(1);
-          if (sum > time) {
-            
-            break;
+        for (int i = 0; i < rangeIn.length; i++) {
+          double sum = stations.last.last;
+          sum += rangeIn.elementAt(i).elementAt(1);
+          if (sum <= time) {
+            stations.last.last = sum;
+            stations.last.elementAt(1).add(rangeIn.elementAt(i).elementAt(0));
+            rangeIn.removeAt(i);
           }
         }
-        stationsCount++;
+
+        pushOutput('Station: $curStation Done: ${stations.last.elementAt(1)} Sum: ${stations.last.last}');
+        curStation++;
       }
 
       changePlaceHolder('Finished!');
