@@ -308,21 +308,15 @@ class _HomeState extends State<Home> {
         List<int> chain = [];
         int node = withTeks[i][0];
 
-        if (node == 4) {
-          print('');
+        for (int i = 0; i < ls2.length; i++) {
+          if (ls2[i] == node) chain.add(ls1[i]);
         }
-
-        arrowChains.forEach((eachChain) {
-          int index = eachChain.indexOf(node);
-
-          if (index > 0) chain.add(eachChain.elementAt(index - 1));
-        });
 
         if (chain.length > 1) {
           chain = [
             ...{...chain}
           ];
-          chain.sort((b, a) => a.compareTo(b));
+          chain.sort();
         }
 
         List temp = [
