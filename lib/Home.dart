@@ -395,7 +395,17 @@ class _HomeState extends State<Home> {
                     .add(rangeIn.elementAt(i).elementAt(0));
                 rangeIn.removeAt(i);
               } else {
-                i++;
+                bool flag = false;
+                for (int i = 0; i < nodePrecedence.length; i++) {
+                  if (rangeOut.contains(nodePrecedence.elementAt(i))) {
+                    dependsOnBig.add(rangeIn.elementAt(i));
+                    rangeIn.removeAt(i);
+                    flag = true;
+                    break;
+                  }
+                }
+
+                if (!flag) i++;
               }
             } else {
               stations.last.last = sum;
