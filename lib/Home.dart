@@ -422,6 +422,19 @@ class _HomeState extends State<Home> {
         curStation++;
       }
 
+      if (rangeOut.length > 0) {
+        rangeOut.sort((a, b) {
+          double aT = a.elementAt(1);
+          double bT = b.elementAt(1);
+          return bT.compareTo(aT);
+        });
+      }
+
+      rangeOut.forEach((item) {
+        curStation++;
+        stations.add([curStation, item.first, item.elementAt(1)]);
+      });
+
       changePlaceHolder('Finished!');
     } catch (e) {
       print(e);
