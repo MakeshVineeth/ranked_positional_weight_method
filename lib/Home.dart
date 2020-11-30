@@ -394,11 +394,17 @@ class _HomeState extends State<Home> {
                     .elementAt(1)
                     .add(rangeIn.elementAt(i).elementAt(0));
                 rangeIn.removeAt(i);
+              } else {
+                i++;
               }
+            } else {
+              stations.last.last = sum;
+              completed.add(curNode);
+              stations.last.elementAt(1).add(rangeIn.elementAt(i).elementAt(0));
+              rangeIn.removeAt(i);
             }
-          } else {
+          } else
             i++;
-          }
         }
 
         pushOutput(
