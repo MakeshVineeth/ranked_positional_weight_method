@@ -379,10 +379,23 @@ class _HomeState extends State<Home> {
           double sum = stations.last.last;
           sum += rangeIn.elementAt(i).elementAt(1);
           if (sum <= time) {
-            stations.last.last = sum;
-            completed.add(rangeIn.elementAt(i).first);
-            stations.last.elementAt(1).add(rangeIn.elementAt(i).elementAt(0));
-            rangeIn.removeAt(i);
+            int curNode = rangeIn.elementAt(i).first;
+
+            if (rangeIn.elementAt(i).length > 3) {
+              List<int> nodePrecedence = rangeIn.elementAt(i).last;
+
+              List<int> checks = nodePrecedence
+                  .where((item) => !completed.contains(item))
+                  .toList();
+              if (checks.isEmpty) {
+                stations.last.last = sum;
+                completed.add(curNode);
+                stations.last
+                    .elementAt(1)
+                    .add(rangeIn.elementAt(i).elementAt(0));
+                rangeIn.removeAt(i);
+              }
+            }
           } else {
             i++;
           }
