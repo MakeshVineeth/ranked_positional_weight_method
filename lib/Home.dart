@@ -430,9 +430,16 @@ class _HomeState extends State<Home> {
         });
       }
 
+      newSection();
       rangeOut.forEach((item) {
         curStation++;
-        stations.add([curStation, item.first, item.elementAt(1)]);
+        stations.add([
+          curStation,
+          [item.first],
+          item.elementAt(1)
+        ]);
+        pushOutput(
+            'Station: $curStation Done: ${stations.last.elementAt(1)} Sum: ${stations.last.last}');
       });
 
       changePlaceHolder('Finished!');
