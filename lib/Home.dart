@@ -164,9 +164,11 @@ class _HomeState extends State<Home> {
   static const f1 = 'Enter Number of Nodes.';
   static const f2 = 'Enter Node, Final Node and Tek Value.';
   static const f3 = 'Enter Last Node and it\'s Tek';
+  static const f4 = 'Enter Time';
 
   int n = 0;
   double finalNodeTek = 0;
+  double time = 0.0;
   List<List<String>> allValues = [];
   List<int> ls1 = [];
   List<int> ls2 = [];
@@ -213,14 +215,22 @@ class _HomeState extends State<Home> {
         finalNodeTek = double.tryParse(text.split(separate).elementAt(1));
         if (finalNodeTek != null) {
           pushOutput('Entered Final Node and Tek: $lastElement $finalNodeTek');
-          newSection();
-
-          displayList('Given Data', allValues);
-
-          changePlaceHolder('Processing...');
-          disableField();
-          doWork();
+          changePlaceHolder(f4);
         }
+      }
+
+      //f4
+      else if (placeHolder == f4) {
+        time = double.tryParse(text);
+        pushOutput('Given Time for Jobs: $time');
+
+        newSection();
+
+        displayList('Given Data', allValues);
+
+        changePlaceHolder('Processing...');
+        disableField();
+        doWork();
       }
     }
   }
@@ -355,7 +365,7 @@ class _HomeState extends State<Home> {
       });
       newSection();
 
-      double time = 1.5;
+      time = 1.5;
       List<List<dynamic>> rangeIn = [];
       List<List<dynamic>> rangeOut = [];
 
