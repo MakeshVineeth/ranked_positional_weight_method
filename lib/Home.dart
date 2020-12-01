@@ -267,16 +267,16 @@ class _HomeState extends State<Home> {
 
       uniqueList.sort();
 
-      for (int count = 0; count < uniqueList.length - 1; count++) {
-        for (int i = 0; i < ls1.length; i++) {
-          if (ls1.elementAt(i) == uniqueList.elementAt(count)) {
-            withTeks.add([ls1.elementAt(i), ls3.elementAt(i)]);
-            break;
-          }
-        }
+      for (int count = 0; count < uniqueList.length; count++) {
+        if (uniqueList[count] == lastElement)
+          withTeks.add([lastElement, finalNodeTek]);
+        else
+          for (int i = 0; i < ls1.length; i++)
+            if (ls1.elementAt(i) == uniqueList.elementAt(count)) {
+              withTeks.add([ls1.elementAt(i), ls3.elementAt(i)]);
+              break;
+            }
       }
-
-      withTeks.add([lastElement, finalNodeTek]);
 
       if (withTeks.length != uniqueList.length) throw Exception;
 
@@ -439,9 +439,8 @@ class _HomeState extends State<Home> {
         });
       }
 
-      newSection();
       rangeOut.forEach((item) {
-        curStation++;
+        curStation = stations.length + 1;
         stations.add([
           curStation,
           [item.first],
