@@ -163,7 +163,7 @@ class _HomeState extends State<Home> {
 
   static const f1 = 'Enter Number of Nodes.';
   static const f2 = 'Enter Node, Final Node and Tek Value.';
-  static const f3 = 'Enter Tek Value of Final Node';
+  static const f3 = 'Enter Last Node and it\'s Tek';
 
   int n = 0;
   double finalNodeTek = 0;
@@ -199,7 +199,7 @@ class _HomeState extends State<Home> {
 
           if (allValues.length == n) {
             pushOutput('Data ${allValues.length}: $values');
-            changePlaceHolder('Enter Tek Value of Final Node');
+            changePlaceHolder(f3);
           } else {
             pushOutput('Data ${allValues.length}: $values');
             clearTextField();
@@ -209,9 +209,10 @@ class _HomeState extends State<Home> {
 
       // f3
       else if (placeHolder == f3) {
-        finalNodeTek = double.tryParse(text);
+        lastElement = int.tryParse(text.split('').elementAt(0));
+        finalNodeTek = double.tryParse(text.split('').elementAt(1));
         if (finalNodeTek != null) {
-          pushOutput('Entered Final Tek: $finalNodeTek');
+          pushOutput('Entered Final Node and Tek: $lastElement $finalNodeTek');
           newSection();
 
           displayList('Given Data', allValues);
@@ -255,7 +256,6 @@ class _HomeState extends State<Home> {
       ];
 
       uniqueList.sort();
-      lastElement = uniqueList[uniqueList.length - 1];
 
       for (int count = 0; count < uniqueList.length - 1; count++) {
         for (int i = 0; i < ls1.length; i++) {
