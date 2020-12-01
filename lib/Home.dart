@@ -209,8 +209,8 @@ class _HomeState extends State<Home> {
 
       // f3
       else if (placeHolder == f3) {
-        lastElement = int.tryParse(text.split('').elementAt(0));
-        finalNodeTek = double.tryParse(text.split('').elementAt(1));
+        lastElement = int.tryParse(text.split(separate).elementAt(0));
+        finalNodeTek = double.tryParse(text.split(separate).elementAt(1));
         if (finalNodeTek != null) {
           pushOutput('Entered Final Node and Tek: $lastElement $finalNodeTek');
           newSection();
