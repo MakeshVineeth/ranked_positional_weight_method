@@ -365,7 +365,6 @@ class _HomeState extends State<Home> {
       });
       newSection();
 
-      time = 1.5;
       List<List<dynamic>> rangeIn = [];
       List<List<dynamic>> rangeOut = [];
 
