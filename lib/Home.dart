@@ -450,6 +450,8 @@ class _HomeState extends State<Home> {
             'Station: $curStation Done: ${stations.last.elementAt(1)} Sum: ${stations.last.last}');
       });
 
+      // Keep dependsOnBig values to stations too; check precedences of rangeOut values too. Loop continuously and check precedences.
+
       changePlaceHolder('Finished!');
     } catch (e) {
       print(e);
