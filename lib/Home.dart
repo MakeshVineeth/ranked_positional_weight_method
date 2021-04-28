@@ -161,6 +161,8 @@ class _HomeState extends State<Home> {
     );
   }
 
+  // Initializations
+
   static const f1 = 'Enter Number of Nodes.';
   static const f2 = 'Enter Node, Final Node and Tek Value.';
   static const f3 = 'Enter Last Node and it\'s Tek';
@@ -170,10 +172,15 @@ class _HomeState extends State<Home> {
   double finalNodeTek = 0;
   double time = 0.0;
   List<List<String>> allValues = [];
-  List<int> ls1 = [];
-  List<int> ls2 = [];
-  List<double> ls3 = [];
+  List<int> ls1 = []; // first node list
+  List<int> ls2 = []; // second final node list.
+  List<double> ls3 = []; // store tek values.
+  double maxRPW = 0.0;
+  List<int> uniqueList = [];
+  int lastElement;
+  List<List<dynamic>> withTeks = [];
 
+  // Use space as separate to split inputs and store in different lists.
   static const separate = ' ';
 
   void nowCode() {
@@ -235,10 +242,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-  List<int> uniqueList = [];
-  int lastElement;
-  List<List<dynamic>> withTeks = [];
-
   void displayList(String title, List list) {
     String outStr = '';
     list.forEach((val) {
@@ -256,17 +259,20 @@ class _HomeState extends State<Home> {
 
   void doWork() {
     try {
+      // Remove duplicates in list by using ... operator, DART Exclusive.
       uniqueList = [
         ...{...ls1},
         ...{...ls2}
       ];
 
+      // Remove duplicates all together in combined list.
       uniqueList = [
         ...{...uniqueList}
       ];
 
-      uniqueList.sort();
+      uniqueList.sort(); // Sort by ascending.
 
+      // Following loop copies nodes and their tek values into separate list called withTeks.
       for (int count = 0; count < uniqueList.length; count++) {
         if (uniqueList[count] == lastElement)
           withTeks.add([lastElement, finalNodeTek]);
@@ -278,16 +284,19 @@ class _HomeState extends State<Home> {
             }
       }
 
+      // If not equal, then given data must be incorrect.
       if (withTeks.length != uniqueList.length) throw Exception;
 
+      // Outputs
       String outStr = '';
-
       withTeks.forEach((val) {
         outStr = outStr + 'N${val[0]} = ' + '${val[1]}, ';
       });
 
+      // Outputs using a helperFunction called removeLastDisplay in a neat manner.
       removeLastDisplay('List of Nodes with Tek', outStr);
 
+      // Following foreach loop creates arrow chains.
       List<List<int>> arrowChains = [];
       uniqueList.forEach((int currentNode) {
         if (currentNode != lastElement) {
@@ -300,9 +309,11 @@ class _HomeState extends State<Home> {
         }
       });
 
+      // Outputs
       displayList('Arrow Chains', arrowChains);
       newSection();
 
+      // Get RPW for each chain.
       List<double> rpwList = [];
       arrowChains.forEach((list) {
         double val = 0.0;
@@ -310,18 +321,23 @@ class _HomeState extends State<Home> {
           for (int i = 0; i < withTeks.length; i++) {
             int cur = withTeks.elementAt(i).elementAt(0);
             if (num == cur) {
-              val += withTeks.elementAt(i).elementAt(1);
+              val += withTeks
+                  .elementAt(i)
+                  .elementAt(1); // adding each node's tek value in a chain.
             }
           }
         });
         rpwList.add(val);
         pushOutput('RPW${list.elementAt(0)}: $val');
       });
-      rpwList.add(finalNodeTek);
+      rpwList.add(finalNodeTek); // add final tek value.
+
+      // outputs.
       pushOutput('RPW$lastElement: $finalNodeTek');
       newSection();
 
-      List<List<dynamic>> table1 = []; // list: [node tek rpw chain]
+      // Table1 Generation
+      List<List<dynamic>> table1 = []; // list format: [node tek rpw chain]
       for (int i = 0; i < withTeks.length; i++) {
         List<int> chain = [];
         int node = withTeks[i][0];
@@ -346,12 +362,14 @@ class _HomeState extends State<Home> {
         table1.add(temp);
       }
 
+      // Sorting table based on RPW in descending manner.
       table1.sort((b, a) {
         double v1 = b.elementAt(2);
         double v2 = a.elementAt(2);
         return v2.compareTo(v1);
       });
 
+      // Retrieving predecessors in this loop.
       table1.forEach((list) {
         List<int> pre = [];
         if (list.length > 3) pre.addAll(list.elementAt(3));
@@ -365,8 +383,11 @@ class _HomeState extends State<Home> {
       });
       newSection();
 
-      List<List<dynamic>> rangeIn = [];
-      List<List<dynamic>> rangeOut = [];
+      // Initializations.
+      List<List<dynamic>> rangeIn =
+          []; // For RPW/Tek values within given time range.
+      List<List<dynamic>> rangeOut =
+          []; // For RPW/Tek values having more than given time range.
 
       table1.forEach((eachList) {
         double time1 = eachList.elementAt(1);
@@ -376,26 +397,34 @@ class _HomeState extends State<Home> {
           rangeOut.add(eachList);
       });
 
-      int curStation = 1;
-      List<List<dynamic>> stations = [];
-      List<int> completed = [];
-      List<List<dynamic>> dependsOnBig = [];
+      int curStation = 1; // Starting station with 1.
+      List<List<dynamic>> stations = []; // Stations will be added here.
+      List<int> completed =
+          []; // A list to check what has been completed so far.
+      List<List<dynamic>> dependsOnBig =
+          []; // For nodes that depend on other nodes having more than given time range.
 
+      // This loop for generation of stations.
       while (rangeIn.length > 0) {
         stations.add([curStation, [], 0.0]);
 
         for (int i = 0; i < rangeIn.length;) {
           double sum = stations.last.last;
-          sum += rangeIn.elementAt(i).elementAt(1);
+          sum += rangeIn.elementAt(i).elementAt(
+              1); // variable sum is used to check total station value and keep within time limits.
           if (sum <= time) {
             int curNode = rangeIn.elementAt(i).first;
 
+            // Checks if precedence exists for node. Length > 3 meaning it exists.
             if (rangeIn.elementAt(i).length > 3) {
               List<int> nodePrecedence = rangeIn.elementAt(i).last;
 
+              // check precedence here and see if it already completed. Returns nodes that are NOT completed.
               List<int> checks = nodePrecedence
                   .where((item) => !completed.contains(item))
                   .toList();
+
+              // If checks is empty, meaning all node precedence are completed and can add directly now.
               if (checks.isEmpty) {
                 stations.last.last = sum;
                 completed.add(curNode);
@@ -403,34 +432,47 @@ class _HomeState extends State<Home> {
                     .elementAt(1)
                     .add(rangeIn.elementAt(i).elementAt(0));
                 rangeIn.removeAt(i);
-              } else {
+              }
+
+              // If node precedence not over, check if any of the node depends on nodes having more than given time limits.
+              else {
                 bool flag = false;
                 for (int i = 0; i < nodePrecedence.length; i++) {
                   if (rangeOut.contains(nodePrecedence.elementAt(i))) {
                     dependsOnBig.add(rangeIn.elementAt(i));
-                    rangeIn.removeAt(i);
+                    rangeIn.removeAt(
+                        i); // If found any node that exceeds time limits, remove it.
                     flag = true;
                     break;
                   }
                 }
 
-                if (!flag) i++;
+                if (!flag)
+                  i++; // Just increment counter if a node cannot be completed right now. It will move on to next one without removing it.
               }
-            } else {
+            }
+
+            // If precedence not available, then add directly.
+            else {
               stations.last.last = sum;
               completed.add(curNode);
               stations.last.elementAt(1).add(rangeIn.elementAt(i).elementAt(0));
-              rangeIn.removeAt(i);
+              rangeIn.removeAt(i); // remove the ones that are added.
             }
           } else
-            i++;
+            i++; // Just increment counter if a node cannot be completed right now. It will move on to next one without removing it.
         }
 
         pushOutput(
-            'Station: $curStation Done: ${stations.last.elementAt(1)} Sum: ${stations.last.last}');
+            'Station: $curStation Done: ${stations.last.elementAt(1)} Sum: ${stations.last.last} Idle Time: ${time - stations.last.last}');
+
+        maxRPW = (maxRPW <= stations.last.last)
+            ? stations.last.last
+            : maxRPW; // Store max rpw value.
         curStation++;
       }
 
+      // From here, nodes having more or exceed given time range, will be added here.
       if (rangeOut.length > 0) {
         rangeOut.sort((a, b) {
           double aT = a.elementAt(1);
@@ -439,6 +481,7 @@ class _HomeState extends State<Home> {
         });
       }
 
+      // Loop adds rangeOut values i.e. having more than given time range, to the end of the list and as separate stations.
       rangeOut.forEach((item) {
         curStation = stations.length + 1;
         stations.add([
@@ -446,12 +489,20 @@ class _HomeState extends State<Home> {
           [item.first],
           item.elementAt(1)
         ]);
+
         pushOutput(
             'Station: $curStation Done: ${stations.last.elementAt(1)} Sum: ${stations.last.last}');
       });
 
-      // Keep dependsOnBig values to stations too; check precedences of rangeOut values too. Loop continuously and check precedences.
+      print(
+          'Production Rate can be increased by (1 / $maxRPW) = ${1.0 / maxRPW} units/min.');
 
+      double sumTek = 0.0;
+      withTeks.forEach((List val) => sumTek += val.elementAt(1));
+      pushOutput(
+          'Balance Delay: ${(stations.length * maxRPW - sumTek) / (stations.length * maxRPW)}');
+
+      // TODO: Extra features (for future): Keep dependsOnBig values to stations too; check precedences of rangeOut values too. Loop continuously and check precedences.
       changePlaceHolder('Finished!');
     } catch (e) {
       print(e);
@@ -463,6 +514,7 @@ class _HomeState extends State<Home> {
     }
   }
 
+  // Function to get arrow chains for each node in a recursive manner.
   List<int> getArrowChain(int currentNode) {
     List<int> chain = [];
     chain.add(currentNode);
