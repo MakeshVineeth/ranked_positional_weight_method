@@ -15,9 +15,11 @@ class BtnDesign extends StatelessWidget {
         margin: EdgeInsets.all(3),
         child: FadeIn(
           duration: const Duration(seconds: 1),
-          child: RaisedButton(
-            elevation: 5,
-            shape: Common.roundBorder,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              shape: Common.roundBorder,
+            ),
             child: Padding(
               padding: const EdgeInsets.all(14.0),
               child: Text(

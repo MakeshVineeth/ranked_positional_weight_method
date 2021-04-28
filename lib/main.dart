@@ -1,13 +1,9 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ranked_positional_method/Home.dart';
 import 'package:ranked_positional_method/common.dart';
 import 'package:theme_provider/theme_provider.dart';
 
-void main() {
-  runApp(RootApp());
-  GestureBinding.instance.resamplingEnabled = true;
-}
+void main() => runApp(RootApp());
 
 class RootApp extends StatelessWidget {
   @override
