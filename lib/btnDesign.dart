@@ -27,7 +27,6 @@ class BtnDesign extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16.5,
-                  color: Theme.of(context).appBarTheme.iconTheme.color,
                 ),
               ),
             ),
