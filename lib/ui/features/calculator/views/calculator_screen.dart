@@ -174,6 +174,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           );
         }
 
+        final double compactResultsWidth = (constraints.maxWidth - 32.0).clamp(0.0, 640.0);
+
         return CustomScrollView(
           controller: _resultsScrollController,
           primary: false,
@@ -198,6 +200,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
               sliver: _buildResultsSliverSelector(
+                availableWidth: compactResultsWidth,
                 maxWidth: 640,
                 onEditInputs: _scrollToInputs,
               ),
@@ -229,20 +232,32 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   Widget _buildResultsScrollPane({required double padding}) {
     return RepaintBoundary(
-      child: CustomScrollView(
-        controller: _resultsScrollController,
-        primary: false,
-        slivers: <Widget>[
-          SliverPadding(
-            padding: EdgeInsets.all(padding),
-            sliver: _buildResultsSliverSelector(),
-          ),
-        ],
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints paneConstraints) {
+          final double availableWidth = (paneConstraints.maxWidth - padding * 2).clamp(
+            0.0,
+            double.infinity,
+          );
+          return CustomScrollView(
+            controller: _resultsScrollController,
+            primary: false,
+            slivers: <Widget>[
+              SliverPadding(
+                padding: EdgeInsets.all(padding),
+                sliver: _buildResultsSliverSelector(availableWidth: availableWidth),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildResultsSliverSelector({double? maxWidth, VoidCallback? onEditInputs}) {
+  Widget _buildResultsSliverSelector({
+    required double availableWidth,
+    double? maxWidth,
+    VoidCallback? onEditInputs,
+  }) {
     return Selector<CalculatorViewModel, _ResultsSnapshot>(
       selector: (_, CalculatorViewModel vm) => (
         result: vm.result,
@@ -253,6 +268,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         return ResultsSliverList(
           result: snapshot.result,
           resultSections: snapshot.resultSections,
+          availableWidth: availableWidth,
           onLoadSample: vm.loadSample,
           onCopyText: vm.copyText,
           onCopyReport: vm.copyFullReport,

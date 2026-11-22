@@ -12,6 +12,7 @@ class ResultsSliverList extends StatelessWidget {
     super.key,
     required this.result,
     required this.resultSections,
+    required this.availableWidth,
     required this.onLoadSample,
     required this.onCopyText,
     required this.onCopyReport,
@@ -24,6 +25,9 @@ class ResultsSliverList extends StatelessWidget {
 
   /// Composite sections built from [result].
   final List<ResultGroup> resultSections;
+
+  /// Available horizontal extent used for responsive summary columns without per-scroll relayout.
+  final double availableWidth;
 
   /// Callback invoked when the user loads a sample preset from empty state.
   final void Function(SamplePreset preset) onLoadSample;
@@ -62,30 +66,24 @@ class ResultsSliverList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double textScale = MediaQuery.textScalerOf(context).scale(16) / 16.0;
+    final double effectiveWidth = maxWidth != null && availableWidth > maxWidth!
+        ? maxWidth!
+        : availableWidth;
+    final bool twoColumnSummary = (effectiveWidth / textScale) >= 520;
+    final List<_ResultDisplayEntry> entries = _flattenEntries(twoColumnSummary);
 
-    return SliverLayoutBuilder(
-      builder: (BuildContext context, sliverConstraints) {
-        final double availableWidth =
-            maxWidth != null && sliverConstraints.crossAxisExtent > maxWidth!
-            ? maxWidth!
-            : sliverConstraints.crossAxisExtent;
-        final bool twoColumnSummary = (availableWidth / textScale) >= 520;
-        final List<_ResultDisplayEntry> entries = _flattenEntries(twoColumnSummary);
-
-        return SliverList.builder(
-          itemCount: entries.length,
-          itemBuilder: (BuildContext context, int index) {
-            final Widget child = _buildEntry(context, entries[index]);
-            if (maxWidth == null) {
-              return child;
-            }
-            return Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth!),
-                child: child,
-              ),
-            );
-          },
+    return SliverList.builder(
+      itemCount: entries.length,
+      itemBuilder: (BuildContext context, int index) {
+        final Widget child = _buildEntry(context, entries[index]);
+        if (maxWidth == null) {
+          return child;
+        }
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth!),
+            child: child,
+          ),
         );
       },
     );

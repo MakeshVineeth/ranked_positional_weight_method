@@ -10,6 +10,8 @@ class CopyableResultCard extends StatelessWidget {
     required this.onCopy,
   });
 
+  static const BorderRadius _cardRadius = BorderRadius.all(Radius.circular(16));
+
   /// Leaf result data displayed inside the card.
   final ResultItem item;
 
@@ -33,14 +35,15 @@ class CopyableResultCard extends StatelessWidget {
         type: MaterialType.card,
         color: item.isHighlighted ? colors.primaryContainer : colors.surfaceContainerLow,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: _cardRadius,
           side: BorderSide(
             color: item.isHighlighted ? colors.primary : colors.outlineVariant,
             width: item.isHighlighted ? 1.5 : 1.0,
           ),
         ),
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: Clip.none,
         child: InkWell(
+          borderRadius: _cardRadius,
           focusColor: colors.primary.withValues(alpha: 0.24),
           onTap: () => onCopy(copyPayload),
           child: ConstrainedBox(
