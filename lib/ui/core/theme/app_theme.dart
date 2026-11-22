@@ -37,6 +37,7 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       splashFactory: InkRipple.splashFactory,
+      focusColor: colorScheme.primary.withValues(alpha: 0.22),
       materialTapTargetSize: MaterialTapTargetSize.padded,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,

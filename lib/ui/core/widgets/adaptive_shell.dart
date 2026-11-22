@@ -135,25 +135,31 @@ class AdaptiveShell extends StatelessWidget {
             top: false,
             child: Row(
               children: <Widget>[
-                NavigationRail(
-                  selectedIndex: navigationShell.currentIndex,
-                  onDestinationSelected: _selectBranch,
-                  extended: sizeClass == WindowSizeClass.large,
-                  labelType: sizeClass == WindowSizeClass.large
-                      ? NavigationRailLabelType.none
-                      : NavigationRailLabelType.all,
-                  destinations: _destinations
-                      .map(
-                        (dest) => NavigationRailDestination(
-                          icon: Icon(dest.icon),
-                          selectedIcon: Icon(dest.selectedIcon),
-                          label: Text(dest.label),
-                        ),
-                      )
-                      .toList(growable: false),
+                FocusTraversalGroup(
+                  child: NavigationRail(
+                    selectedIndex: navigationShell.currentIndex,
+                    onDestinationSelected: _selectBranch,
+                    extended: sizeClass == WindowSizeClass.large,
+                    labelType: sizeClass == WindowSizeClass.large
+                        ? NavigationRailLabelType.none
+                        : NavigationRailLabelType.all,
+                    destinations: _destinations
+                        .map(
+                          (dest) => NavigationRailDestination(
+                            icon: Icon(dest.icon),
+                            selectedIcon: Icon(dest.selectedIcon),
+                            label: Text(dest.label),
+                          ),
+                        )
+                        .toList(growable: false),
+                  ),
                 ),
                 const VerticalDivider(width: 1),
-                Expanded(child: navigationShell),
+                Expanded(
+                  child: FocusTraversalGroup(
+                    child: navigationShell,
+                  ),
+                ),
               ],
             ),
           ),

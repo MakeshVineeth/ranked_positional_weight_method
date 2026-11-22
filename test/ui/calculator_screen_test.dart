@@ -304,4 +304,24 @@ void main() {
       }
     },
   );
+
+  testWidgets(
+    'Android TV 1080p viewport renders extended NavigationRail and split pane cleanly',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(CalculateRpwApp(locator: ServiceLocator.instance));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationRail), findsOneWidget);
+      expect(find.text('Ready to Balance Your Assembly Line'), findsOneWidget);
+
+      await tester.tap(find.text('6-Node Classic Line'));
+      await tester.pumpAndSettle();
+      expect(find.text('Calculated Results'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
