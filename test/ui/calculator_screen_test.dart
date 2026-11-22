@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:ranked_positional_method/app/di/service_locator.dart';
+import 'package:ranked_positional_method/core/constants/app_constants.dart';
 import 'package:ranked_positional_method/data/repositories/theme_repository.dart';
 import 'package:ranked_positional_method/data/services/clipboard_service.dart';
 import 'package:ranked_positional_method/data/services/preferences_storage_service.dart';
+import 'package:ranked_positional_method/data/services/url_launcher_service.dart';
 import 'package:ranked_positional_method/main.dart';
 
 class _InMemoryStorage implements KeyValueStorage {
@@ -27,15 +29,29 @@ class _InMemoryClipboard implements ClipboardAdapter {
   }
 }
 
+class _InMemoryUrlLauncher implements UrlLauncherAdapter {
+  final List<Uri> launchedUris = <Uri>[];
+  bool shouldSucceed = true;
+
+  @override
+  Future<bool> openExternalUrl(Uri uri) async {
+    launchedUris.add(uri);
+    return shouldSucceed;
+  }
+}
+
 void main() {
   late _InMemoryClipboard fakeClipboard;
+  late _InMemoryUrlLauncher fakeUrlLauncher;
 
   setUp(() {
     fakeClipboard = _InMemoryClipboard();
+    fakeUrlLauncher = _InMemoryUrlLauncher();
     final _InMemoryStorage storage = _InMemoryStorage();
     ServiceLocator.configure(
       storage: storage,
       clipboard: fakeClipboard,
+      urlLauncher: fakeUrlLauncher,
       themeRepository: ThemeRepository(storage: storage),
     );
   });
@@ -226,4 +242,66 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'Privacy screen displays accessible clickable hyperlinks for privacy policy and project URLs',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final SemanticsHandle handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(CalculateRpwApp(locator: ServiceLocator.instance));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Privacy'));
+        await tester.pumpAndSettle();
+
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+
+        final Finder scrollable = find.byType(Scrollable).first;
+        await tester.scrollUntilVisible(
+          find.text(AppConstants.privacyPolicyUrl),
+          150,
+          scrollable: scrollable,
+        );
+        await tester.ensureVisible(find.text(AppConstants.privacyPolicyUrl));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(AppConstants.privacyPolicyUrl));
+        await tester.pumpAndSettle();
+
+        await tester.scrollUntilVisible(
+          find.text(AppConstants.projectUrl),
+          150,
+          scrollable: scrollable,
+        );
+        await tester.ensureVisible(find.text(AppConstants.projectUrl));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(AppConstants.projectUrl));
+        await tester.pumpAndSettle();
+
+        expect(
+          fakeUrlLauncher.launchedUris,
+          equals(<Uri>[
+            Uri.parse(AppConstants.privacyPolicyUrl),
+            Uri.parse(AppConstants.projectUrl),
+          ]),
+        );
+
+        fakeUrlLauncher.shouldSucceed = false;
+        await tester.tap(find.text(AppConstants.projectUrl));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Could not open project page. Use the copy button to copy the link.'),
+          findsOneWidget,
+        );
+      } finally {
+        handle.dispose();
+      }
+    },
+  );
 }

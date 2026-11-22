@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:ranked_positional_method/app/di/service_locator.dart';
 import 'package:ranked_positional_method/core/constants/app_constants.dart';
 import 'package:ranked_positional_method/core/layout/window_size_class.dart';
+import 'package:ranked_positional_method/data/services/url_launcher_service.dart';
+import 'package:url_launcher/link.dart';
 
 /// Displays the app's offline privacy commitment, data practices, and version details.
 class PrivacyScreen extends StatelessWidget {
@@ -21,6 +24,20 @@ class PrivacyScreen extends StatelessWidget {
           duration: const Duration(seconds: 4),
         ),
       );
+  }
+
+  Future<void> _openUrl(BuildContext context, String label, Uri uri) async {
+    final bool launched = await ServiceLocator.instance.urlLauncher.openExternalUrl(uri);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text('Could not open $label. Use the copy button to copy the link.'),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+    }
   }
 
   @override
@@ -60,8 +77,13 @@ class PrivacyScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _PrivacyCard(
             title: 'Standalone Web Privacy Policy',
-            body:
-                'For Google Play Console verification and web visitors, the full privacy policy is hosted at:\n${AppConstants.privacyPolicyUrl}',
+            body: 'For Google Play Console verification and web visitors, the full privacy policy is hosted at:',
+            linkUrl: AppConstants.privacyPolicyUrl,
+            onOpenLink: () => _openUrl(
+              context,
+              'privacy policy',
+              Uri.parse(AppConstants.privacyPolicyUrl),
+            ),
             copyActionLabel: 'Copy privacy policy URL',
             onCopy: () => _copyUrl(context, 'privacy policy', AppConstants.privacyPolicyUrl),
           ),
@@ -69,7 +91,13 @@ class PrivacyScreen extends StatelessWidget {
           _PrivacyCard(
             title: 'Application Details',
             body:
-                '${AppConstants.appTitle} (${AppConstants.appSubtitle})\nVersion ${AppConstants.appVersion}\nProject Page: ${AppConstants.projectUrl}',
+                '${AppConstants.appTitle} (${AppConstants.appSubtitle})\nVersion ${AppConstants.appVersion}\nProject Page:',
+            linkUrl: AppConstants.projectUrl,
+            onOpenLink: () => _openUrl(
+              context,
+              'project page',
+              Uri.parse(AppConstants.projectUrl),
+            ),
             copyActionLabel: 'Copy project page URL',
             onCopy: () => _copyUrl(context, 'project page', AppConstants.projectUrl),
           ),
@@ -98,12 +126,16 @@ class _PrivacyCard extends StatelessWidget {
   const _PrivacyCard({
     required this.title,
     required this.body,
+    this.linkUrl,
+    this.onOpenLink,
     this.copyActionLabel,
     this.onCopy,
   });
 
   final String title;
   final String body;
+  final String? linkUrl;
+  final VoidCallback? onOpenLink;
   final String? copyActionLabel;
   final VoidCallback? onCopy;
 
@@ -137,9 +169,81 @@ class _PrivacyCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(body, style: textTheme.bodyMedium),
+            if (linkUrl != null && onOpenLink != null) ...<Widget>[
+              const SizedBox(height: 4),
+              _ExternalHyperlink(
+                url: linkUrl!,
+                onOpenLink: onOpenLink!,
+              ),
+            ],
           ],
         ),
       ),
     );
+  }
+}
+
+class _ExternalHyperlink extends StatelessWidget {
+  const _ExternalHyperlink({
+    required this.url,
+    required this.onOpenLink,
+  });
+
+  final String url;
+  final VoidCallback onOpenLink;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    Widget buildSurface(VoidCallback? onTap) {
+      return InkWell(
+        borderRadius: BorderRadius.circular(8),
+        mouseCursor: SystemMouseCursors.click,
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    url,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colors.primary,
+                      decoration: TextDecoration.underline,
+                      decorationColor: colors.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.open_in_new_rounded,
+                  size: 18,
+                  color: colors.primary,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final Widget interactiveLink =
+        kIsWeb && ServiceLocator.instance.urlLauncher is FlutterUrlLauncherService
+        ? Link(
+            uri: Uri.parse(url),
+            target: LinkTarget.blank,
+            builder: (BuildContext context, FollowLink? followLink) => buildSurface(followLink),
+          )
+        : Semantics(
+            link: true,
+            child: buildSurface(onOpenLink),
+          );
+
+    return SelectionContainer.disabled(child: interactiveLink);
   }
 }

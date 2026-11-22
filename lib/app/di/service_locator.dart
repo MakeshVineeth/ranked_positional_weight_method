@@ -1,6 +1,7 @@
 import 'package:ranked_positional_method/data/repositories/theme_repository.dart';
 import 'package:ranked_positional_method/data/services/clipboard_service.dart';
 import 'package:ranked_positional_method/data/services/preferences_storage_service.dart';
+import 'package:ranked_positional_method/data/services/url_launcher_service.dart';
 import 'package:ranked_positional_method/domain/services/rpw_input_validator.dart';
 import 'package:ranked_positional_method/domain/services/rpw_output_composer.dart';
 import 'package:ranked_positional_method/domain/services/rpw_solver.dart';
@@ -10,12 +11,14 @@ class ServiceLocator {
   ServiceLocator._({
     KeyValueStorage? storage,
     ClipboardAdapter? clipboard,
+    UrlLauncherAdapter? urlLauncher,
     RpwInputValidator? validator,
     RpwSolver? solver,
     RpwOutputComposer? composer,
     ThemeRepository? themeRepository,
   }) : storage = storage ?? PreferencesStorageService(),
        clipboard = clipboard ?? const FlutterClipboardService(),
+       urlLauncher = urlLauncher ?? const FlutterUrlLauncherService(),
        validator = validator ?? const RpwInputValidator(),
        solver =
            solver ??
@@ -35,6 +38,7 @@ class ServiceLocator {
   static void configure({
     KeyValueStorage? storage,
     ClipboardAdapter? clipboard,
+    UrlLauncherAdapter? urlLauncher,
     RpwInputValidator? validator,
     RpwSolver? solver,
     RpwOutputComposer? composer,
@@ -43,6 +47,7 @@ class ServiceLocator {
     _instance = ServiceLocator._(
       storage: storage,
       clipboard: clipboard,
+      urlLauncher: urlLauncher,
       validator: validator,
       solver: solver,
       composer: composer,
@@ -60,6 +65,9 @@ class ServiceLocator {
 
   /// System clipboard abstraction.
   final ClipboardAdapter clipboard;
+
+  /// External HTTPS link launcher abstraction.
+  final UrlLauncherAdapter urlLauncher;
 
   /// Input validation and parser service.
   final RpwInputValidator validator;
