@@ -42,70 +42,105 @@ void main() {
 
   tearDown(ServiceLocator.reset);
 
-  testWidgets('Phone viewport solves 6-node sample, copies result, and meets a11y guidelines', (
-    WidgetTester tester,
-  ) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.reset);
+  testWidgets(
+    'Phone viewport shows inline errors, auto-scrolls to results on solve, and jumps back cleanly',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
-    final SemanticsHandle handle = tester.ensureSemantics();
-    try {
-      await tester.pumpWidget(CalculateRpwApp(locator: ServiceLocator.instance));
-      await tester.pumpAndSettle();
+      final SemanticsHandle handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(CalculateRpwApp(locator: ServiceLocator.instance));
+        await tester.pumpAndSettle();
 
-      expect(find.byType(NavigationBar), findsOneWidget);
-      expect(find.text('6-Node Classic Line'), findsOneWidget);
+        expect(find.byType(NavigationBar), findsOneWidget);
+        expect(find.text('6-Node Classic Line'), findsOneWidget);
 
-      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(textContrastGuideline));
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
 
-      await tester.tap(find.text('6-Node Classic Line'));
-      await tester.pumpAndSettle();
+        // Scroll to Calculate button and verify empty submission shows inline error nearby.
+        await tester.ensureVisible(find.text('Calculate'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Calculate'));
+        await tester.pumpAndSettle();
+        expect(find.text('Add at least one node connection before calculating.'), findsOneWidget);
 
-      await tester.scrollUntilVisible(
-        find.text('Copy Report'),
-        200,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Calculated Results'), findsOneWidget);
+        // Scroll back to top and enter a real manual problem, then tap Calculate.
+        await tester.scrollUntilVisible(
+          find.widgetWithText(TextField, 'From'),
+          -200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.enterText(find.widgetWithText(TextField, 'From'), '1');
+        await tester.enterText(find.widgetWithText(TextField, 'To'), '2');
+        await tester.enterText(find.widgetWithText(TextField, 'Tek'), '0.4');
+        await tester.ensureVisible(find.text('Add'));
+        await tester.tap(find.text('Add'));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Copy Report'));
-      await tester.pump();
-      expect(fakeClipboard.copiedText, contains('Workstations: 3'));
-      expect(find.text('Copied full RPW report to clipboard.'), findsOneWidget);
+        await tester.ensureVisible(find.widgetWithText(TextField, 'Final Node'));
+        await tester.enterText(find.widgetWithText(TextField, 'Final Node'), '2');
+        await tester.enterText(find.widgetWithText(TextField, 'Final Tek'), '0.5');
+        await tester.enterText(find.widgetWithText(TextField, 'Cycle Time'), '1.0');
 
-      await tester.scrollUntilVisible(
-        find.text('Production Rate'),
-        150,
-        scrollable: find.byType(Scrollable).first,
-      );
-      expect(find.text('Production Rate'), findsOneWidget);
-      await expectLater(tester, meetsGuideline(textContrastGuideline));
+        await tester.ensureVisible(find.text('Calculate'));
+        await tester.tap(find.text('Calculate'));
+        await tester.pumpAndSettle();
 
-      await tester.scrollUntilVisible(
-        find.text('Quick Text'),
-        -200,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Quick Text'));
-      await tester.pumpAndSettle();
-      expect(find.text('Quick Text Entry'), findsOneWidget);
+        // Results header and actions must automatically scroll into view after Calculate.
+        expect(find.text('Calculated Results'), findsOneWidget);
+        expect(find.text('Edit Inputs'), findsOneWidget);
+        expect(find.text('Copy Report'), findsOneWidget);
 
-      await tester.tap(find.text('Help'));
-      await tester.pumpAndSettle();
-      expect(find.text('How to Use Calculate RPW'), findsOneWidget);
+        await tester.tap(find.text('Copy Report'));
+        await tester.pump();
+        expect(fakeClipboard.copiedText, contains('Workstations: 1'));
+        expect(find.text('Copied full RPW report to clipboard.'), findsOneWidget);
 
-      await tester.tap(find.text('Privacy'));
-      await tester.pumpAndSettle();
-      expect(find.text('Privacy Policy and About'), findsOneWidget);
-    } finally {
-      handle.dispose();
-    }
-  });
+        // Jump back up to Edit Inputs cleanly in one tap.
+        await tester.tap(find.text('Edit Inputs'));
+        await tester.pumpAndSettle();
+
+        // Tapping Quick Example also auto-scrolls straight to results.
+        await tester.tap(find.text('6-Node Classic Line'));
+        await tester.pumpAndSettle();
+        expect(find.text('Calculated Results'), findsOneWidget);
+
+        await tester.scrollUntilVisible(
+          find.text('Production Rate'),
+          150,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(find.text('Production Rate'), findsOneWidget);
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+
+        await tester.scrollUntilVisible(
+          find.text('Edit Inputs'),
+          -200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('Edit Inputs'));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Quick Text'));
+        await tester.pumpAndSettle();
+        expect(find.text('Quick Text Entry'), findsOneWidget);
+
+        await tester.tap(find.text('Help'));
+        await tester.pumpAndSettle();
+        expect(find.text('How to Use Calculate RPW'), findsOneWidget);
+
+        await tester.tap(find.text('Privacy'));
+        await tester.pumpAndSettle();
+        expect(find.text('Privacy Policy and About'), findsOneWidget);
+      } finally {
+        handle.dispose();
+      }
+    },
+  );
 
   testWidgets('Theme toggle cycles System, Light, and Dark cleanly', (WidgetTester tester) async {
     tester.view.physicalSize = const Size(1280, 800);

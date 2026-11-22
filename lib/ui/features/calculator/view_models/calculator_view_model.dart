@@ -70,6 +70,7 @@ class CalculatorViewModel extends ChangeNotifier {
   List<ResultGroup> _resultSections = const <ResultGroup>[];
   String? _errorMessage;
   int _formRevision = 0;
+  int _calculationRevision = 0;
 
   /// Active UI input mode.
   InputMode get inputMode => _inputMode;
@@ -88,6 +89,9 @@ class CalculatorViewModel extends ChangeNotifier {
 
   /// Monotonically incremented counter telling views when fields were programmatically replaced.
   int get formRevision => _formRevision;
+
+  /// Monotonically incremented counter emitted on each successful calculation.
+  int get calculationRevision => _calculationRevision;
 
   /// Current step in Quick Text mode.
   QuickStep get quickStep => _quickStep;
@@ -421,6 +425,7 @@ class CalculatorViewModel extends ChangeNotifier {
         _result = value;
         _resultSections = List<ResultGroup>.unmodifiable(_composer.buildSections(value));
         _errorMessage = null;
+        _calculationRevision++;
       case SolveError<RpwResult>(:final failure):
         _result = null;
         _resultSections = const <ResultGroup>[];

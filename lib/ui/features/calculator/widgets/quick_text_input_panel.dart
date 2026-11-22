@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:ranked_positional_method/ui/features/calculator/view_models/calculator_view_model.dart';
+import 'package:ranked_positional_method/ui/features/calculator/widgets/inline_error_banner.dart';
 
 /// Sequential space-separated input mode compatible with rapid keyboard entry.
 class QuickTextInputPanel extends StatefulWidget {
@@ -49,6 +50,7 @@ class _QuickTextInputPanelState extends State<QuickTextInputPanel> {
       _controller.clear();
     }
     if (widget.viewModel.quickStep == QuickStep.complete) {
+      FocusManager.instance.primaryFocus?.unfocus();
       _clearFocusNode.requestFocus();
     } else {
       _focusNode.requestFocus();
@@ -132,6 +134,10 @@ class _QuickTextInputPanelState extends State<QuickTextInputPanel> {
               ),
             ),
             const SizedBox(height: 12),
+            if (vm.errorMessage != null) ...<Widget>[
+              InlineErrorBanner(message: vm.errorMessage!),
+              const SizedBox(height: 12),
+            ],
             LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 final double effectiveWidth = constraints.maxWidth / textScale;

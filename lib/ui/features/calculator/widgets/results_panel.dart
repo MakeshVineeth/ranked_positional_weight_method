@@ -5,22 +5,19 @@ import 'package:ranked_positional_method/domain/models/rpw_result.dart';
 import 'package:ranked_positional_method/domain/services/sample_problem_factory.dart';
 import 'package:ranked_positional_method/ui/core/widgets/copyable_result_card.dart';
 
-/// Lazy sliver list displaying validation errors, empty state, or composite RPW results.
+/// Lazy sliver list displaying empty guidance or composite RPW results.
 class ResultsSliverList extends StatelessWidget {
   /// Creates a lazy [ResultsSliverList].
   const ResultsSliverList({
     super.key,
-    required this.errorMessage,
     required this.result,
     required this.resultSections,
     required this.onLoadSample,
     required this.onCopyText,
     required this.onCopyReport,
+    this.onEditInputs,
     this.maxWidth,
   });
-
-  /// Current validation or solver error message, if any.
-  final String? errorMessage;
 
   /// Latest computed RPW result, or `null` when none is available.
   final RpwResult? result;
@@ -36,6 +33,9 @@ class ResultsSliverList extends StatelessWidget {
 
   /// Callback invoked to copy the full plain-text report.
   final Future<void> Function() onCopyReport;
+
+  /// Optional callback shown on compact screens to jump back to input fields.
+  final VoidCallback? onEditInputs;
 
   /// Optional maximum width constraint applied to each virtualized item.
   final double? maxWidth;
@@ -92,19 +92,14 @@ class ResultsSliverList extends StatelessWidget {
   }
 
   List<_ResultDisplayEntry> _flattenEntries(bool twoColumnSummary) {
-    final List<_ResultDisplayEntry> entries = <_ResultDisplayEntry>[];
-
-    if (errorMessage != null) {
-      entries.add(_ErrorBannerEntry(errorMessage!));
-    }
-
     final RpwResult? current = result;
     if (current == null) {
-      entries.add(const _EmptyStateEntry());
-      return entries;
+      return const <_ResultDisplayEntry>[_EmptyStateEntry()];
     }
 
-    entries.add(_ResultsHeaderEntry(current));
+    final List<_ResultDisplayEntry> entries = <_ResultDisplayEntry>[
+      _ResultsHeaderEntry(current),
+    ];
 
     for (int s = 0; s < resultSections.length; s++) {
       final ResultGroup group = resultSections[s];
@@ -128,39 +123,9 @@ class ResultsSliverList extends StatelessWidget {
   }
 
   Widget _buildEntry(BuildContext context, _ResultDisplayEntry entry) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return switch (entry) {
-      _ErrorBannerEntry(:final message) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Semantics(
-          container: true,
-          liveRegion: true,
-          child: Card(
-            color: colors.errorContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.error_outline_rounded,
-                    color: colors.onErrorContainer,
-                    semanticLabel: 'Error',
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      message,
-                      style: textTheme.bodyMedium?.copyWith(color: colors.onErrorContainer),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
       _EmptyStateEntry() => _EmptyResultsState(
         onLoadSample: () => onLoadSample(SamplePreset.classicSixNode),
       ),
@@ -184,14 +149,26 @@ class ResultsSliverList extends StatelessWidget {
                   style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
-              FilledButton.tonalIcon(
-                onPressed: () => _copyAndNotify(
-                  context,
-                  onCopyReport,
-                  'Copied full RPW report to clipboard.',
-                ),
-                icon: const Icon(Icons.copy_all_rounded),
-                label: const Text('Copy Report'),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  if (onEditInputs != null)
+                    OutlinedButton.icon(
+                      onPressed: onEditInputs,
+                      icon: const Icon(Icons.edit_outlined),
+                      label: const Text('Edit Inputs'),
+                    ),
+                  FilledButton.tonalIcon(
+                    onPressed: () => _copyAndNotify(
+                      context,
+                      onCopyReport,
+                      'Copied full RPW report to clipboard.',
+                    ),
+                    icon: const Icon(Icons.copy_all_rounded),
+                    label: const Text('Copy Report'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -241,11 +218,6 @@ class ResultsSliverList extends StatelessWidget {
 
 sealed class _ResultDisplayEntry {
   const _ResultDisplayEntry();
-}
-
-final class _ErrorBannerEntry extends _ResultDisplayEntry {
-  const _ErrorBannerEntry(this.message);
-  final String message;
 }
 
 final class _EmptyStateEntry extends _ResultDisplayEntry {

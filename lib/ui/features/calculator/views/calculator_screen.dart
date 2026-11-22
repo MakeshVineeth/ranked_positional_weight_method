@@ -1,3 +1,4 @@
+import 'dart:async' show unawaited;
 import 'dart:ui' show DisplayFeature, DisplayFeatureType;
 
 import 'package:material_ui/material_ui.dart';
@@ -12,7 +13,6 @@ import 'package:ranked_positional_method/ui/features/calculator/widgets/results_
 import 'package:ranked_positional_method/ui/features/calculator/widgets/wear_calculator_view.dart';
 
 typedef _ResultsSnapshot = ({
-  String? errorMessage,
   RpwResult? result,
   List<ResultGroup> resultSections,
 });
@@ -29,12 +29,79 @@ class CalculatorScreen extends StatefulWidget {
 class _CalculatorScreenState extends State<CalculatorScreen> {
   final ScrollController _inputScrollController = ScrollController();
   final ScrollController _resultsScrollController = ScrollController();
+  final GlobalKey _inputSectionKey = GlobalKey();
+
+  CalculatorViewModel? _viewModel;
+  int _lastCalculationRevision = 0;
+  bool _isCompactLayout = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final CalculatorViewModel nextVm = context.read<CalculatorViewModel>();
+    if (_viewModel != nextVm) {
+      _viewModel?.removeListener(_onViewModelChanged);
+      _viewModel = nextVm;
+      _lastCalculationRevision = nextVm.calculationRevision;
+      _viewModel!.addListener(_onViewModelChanged);
+    }
+  }
 
   @override
   void dispose() {
+    _viewModel?.removeListener(_onViewModelChanged);
     _inputScrollController.dispose();
     _resultsScrollController.dispose();
     super.dispose();
+  }
+
+  void _onViewModelChanged() {
+    final CalculatorViewModel? vm = _viewModel;
+    if (vm == null || vm.calculationRevision == _lastCalculationRevision) {
+      return;
+    }
+    _lastCalculationRevision = vm.calculationRevision;
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_resultsScrollController.hasClients) {
+        return;
+      }
+      if (_isCompactLayout) {
+        final RenderObject? renderObject = _inputSectionKey.currentContext?.findRenderObject();
+        final double inputHeight = renderObject is RenderBox ? renderObject.size.height : 0.0;
+        final double maxExtent = _resultsScrollController.position.maxScrollExtent;
+        final double target = (inputHeight + 24.0).clamp(0.0, maxExtent);
+        unawaited(
+          _resultsScrollController.animateTo(
+            target,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+          ),
+        );
+      } else if (_resultsScrollController.offset > 0) {
+        unawaited(
+          _resultsScrollController.animateTo(
+            0.0,
+            duration: const Duration(milliseconds: 260),
+            curve: Curves.easeOutCubic,
+          ),
+        );
+      }
+    });
+  }
+
+  void _scrollToInputs() {
+    if (!_resultsScrollController.hasClients) {
+      return;
+    }
+    unawaited(
+      _resultsScrollController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
+      ),
+    );
   }
 
   @override
@@ -49,6 +116,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final WindowSizeClass sizeClass = WindowSizeClass.fromWidth(constraints.maxWidth);
+        _isCompactLayout = sizeClass == WindowSizeClass.compact;
 
         if (sizeClass == WindowSizeClass.wear) {
           return Consumer<CalculatorViewModel>(
@@ -117,6 +185,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 640),
                     child: RepaintBoundary(
+                      key: _inputSectionKey,
                       child: Consumer<CalculatorViewModel>(
                         builder: (_, CalculatorViewModel viewModel, _) =>
                             _buildInputSection(viewModel),
@@ -128,7 +197,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              sliver: _buildResultsSliverSelector(maxWidth: 640),
+              sliver: _buildResultsSliverSelector(
+                maxWidth: 640,
+                onEditInputs: _scrollToInputs,
+              ),
             ),
           ],
         );
@@ -170,22 +242,21 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     );
   }
 
-  Widget _buildResultsSliverSelector({double? maxWidth}) {
+  Widget _buildResultsSliverSelector({double? maxWidth, VoidCallback? onEditInputs}) {
     return Selector<CalculatorViewModel, _ResultsSnapshot>(
       selector: (_, CalculatorViewModel vm) => (
-        errorMessage: vm.errorMessage,
         result: vm.result,
         resultSections: vm.resultSections,
       ),
       builder: (BuildContext context, _ResultsSnapshot snapshot, _) {
         final CalculatorViewModel vm = context.read<CalculatorViewModel>();
         return ResultsSliverList(
-          errorMessage: snapshot.errorMessage,
           result: snapshot.result,
           resultSections: snapshot.resultSections,
           onLoadSample: vm.loadSample,
           onCopyText: vm.copyText,
           onCopyReport: vm.copyFullReport,
+          onEditInputs: onEditInputs,
           maxWidth: maxWidth,
         );
       },

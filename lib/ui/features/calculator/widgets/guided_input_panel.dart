@@ -4,6 +4,7 @@ import 'package:ranked_positional_method/core/formatting/number_formatter.dart';
 import 'package:ranked_positional_method/domain/models/rpw_input.dart';
 import 'package:ranked_positional_method/domain/services/sample_problem_factory.dart';
 import 'package:ranked_positional_method/ui/features/calculator/view_models/calculator_view_model.dart';
+import 'package:ranked_positional_method/ui/features/calculator/widgets/inline_error_banner.dart';
 
 /// Visual form panel for entering connections, final node, and cycle time.
 class GuidedInputPanel extends StatefulWidget {
@@ -98,6 +99,7 @@ class _GuidedInputPanelState extends State<GuidedInputPanel> {
   }
 
   void _handleCalculate() {
+    FocusManager.instance.primaryFocus?.unfocus();
     widget.viewModel.calculateGuided(
       finalNodeText: _finalNodeController.text,
       finalTekText: _finalTekController.text,
@@ -265,6 +267,10 @@ class _GuidedInputPanelState extends State<GuidedInputPanel> {
           ),
         ),
         const SizedBox(height: 14),
+        if (widget.viewModel.errorMessage != null) ...<Widget>[
+          InlineErrorBanner(message: widget.viewModel.errorMessage!),
+          const SizedBox(height: 12),
+        ],
         LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             final double effectiveWidth = constraints.maxWidth / textScale;
