@@ -1,191 +1,63 @@
 'use strict';
-const MANIFEST = 'flutter-app-manifest';
-const TEMP = 'flutter-temp-cache';
-const CACHE_NAME = 'flutter-app-cache';
-const RESOURCES = {
-  "assets/AssetManifest.json": "491f300584ee76691ac1f791d93d4b8e",
-"assets/assets/logo.png": "5545b0cd1aa3eb2cab00a74b773ce3d1",
-"assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
-"assets/fonts/MaterialIcons-Regular.otf": "1288c9e28052e028aba623321f7826ac",
-"assets/NOTICES": "58e5406479b60f197321b3194617e1ce",
-"assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "6d342eb68f170c97609e9da345464e5e",
-"favicon.png": "5545b0cd1aa3eb2cab00a74b773ce3d1",
-"icons/Icon-192.png": "5545b0cd1aa3eb2cab00a74b773ce3d1",
-"icons/Icon-512.png": "5545b0cd1aa3eb2cab00a74b773ce3d1",
-"index.html": "7e35518906857b33d37b5b7e7ab5cc36",
-"/": "7e35518906857b33d37b5b7e7ab5cc36",
-"main.dart.js": "38880da456e259cbb805bff7bf4b7234",
-"manifest.json": "a329ff98b64358d16d5d03ffdf3f9379",
-"version.json": "b9dfeeb585fb53dafa441e71dcd28136"
-};
 
-// The application shell files that are downloaded before a service worker can
-// start.
-const CORE = [
-  "/",
-"main.dart.js",
-"index.html",
-"assets/NOTICES",
-"assets/AssetManifest.json",
-"assets/FontManifest.json"];
-// During install, the TEMP cache is populated with the application shell files.
-self.addEventListener("install", (event) => {
+// This file is a vestigial self-unregistering cleanup stub.
+// Flutter stopped generating an offline caching service worker in
+// Flutter 3.41.0 (2026-02-10) and no longer registers or uses a service worker
+// by default.
+//
+// This stub is emitted only so returning browsers that previously visited a
+// deployment built with Flutter <= 3.38 (2025-11-11, which registered an
+// offline-first caching service worker) can fetch an updated script at
+// `/flutter_service_worker.js`, unregister the legacy worker, and purge its
+// caches instead of getting stuck serving cached assets when
+// `/flutter_service_worker.js` returns 404.
+//
+// You can safely delete or exclude this file from your deployment unless you
+// have returning end-users upgrading from a Flutter <= 3.38 deployment.
+// To provide your own service worker, place a custom `flutter_service_worker.js`
+// in your project's `web/` directory.
+// See https://github.com/flutter/flutter/issues/156910 for more details.
+
+const CACHE_NAMES = [
+  'flutter-app-manifest',
+  'flutter-temp-cache',
+  'flutter-app-cache',
+];
+
+self.addEventListener('install', () => {
   self.skipWaiting();
-  return event.waitUntil(
-    caches.open(TEMP).then((cache) => {
-      return cache.addAll(
-        CORE.map((value) => new Request(value + '?revision=' + RESOURCES[value], {'cache': 'reload'})));
-    })
-  );
 });
 
-// During activate, the cache is populated with the temp files downloaded in
-// install. If this service worker is upgrading from one with a saved
-// MANIFEST, then use this to retain unchanged resource files.
-self.addEventListener("activate", function(event) {
-  return event.waitUntil(async function() {
-    try {
-      var contentCache = await caches.open(CACHE_NAME);
-      var tempCache = await caches.open(TEMP);
-      var manifestCache = await caches.open(MANIFEST);
-      var manifest = await manifestCache.match('manifest');
-      // When there is no prior manifest, clear the entire cache.
-      if (!manifest) {
-        await caches.delete(CACHE_NAME);
-        contentCache = await caches.open(CACHE_NAME);
-        for (var request of await tempCache.keys()) {
-          var response = await tempCache.match(request);
-          await contentCache.put(request, response);
-        }
-        await caches.delete(TEMP);
-        // Save the manifest to make future upgrades efficient.
-        await manifestCache.put('manifest', new Response(JSON.stringify(RESOURCES)));
-        return;
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      try {
+        await self.registration.unregister();
+      } catch (e) {
+        console.warn('Failed to unregister the service worker:', e);
       }
-      var oldManifest = await manifest.json();
-      var origin = self.location.origin;
-      for (var request of await contentCache.keys()) {
-        var key = request.url.substring(origin.length + 1);
-        if (key == "") {
-          key = "/";
-        }
-        // If a resource from the old manifest is not in the new cache, or if
-        // the MD5 sum has changed, delete it. Otherwise the resource is left
-        // in the cache and can be reused by the new service worker.
-        if (!RESOURCES[key] || RESOURCES[key] != oldManifest[key]) {
-          await contentCache.delete(request);
-        }
-      }
-      // Populate the cache with the app shell TEMP files, potentially overwriting
-      // cache files preserved above.
-      for (var request of await tempCache.keys()) {
-        var response = await tempCache.match(request);
-        await contentCache.put(request, response);
-      }
-      await caches.delete(TEMP);
-      // Save the manifest to make future upgrades efficient.
-      await manifestCache.put('manifest', new Response(JSON.stringify(RESOURCES)));
-      return;
-    } catch (err) {
-      // On an unhandled exception the state of the cache cannot be guaranteed.
-      console.error('Failed to upgrade service worker: ' + err);
-      await caches.delete(CACHE_NAME);
-      await caches.delete(TEMP);
-      await caches.delete(MANIFEST);
-    }
-  }());
-});
 
-// The fetch handler redirects requests for RESOURCE files to the service
-// worker cache.
-self.addEventListener("fetch", (event) => {
-  if (event.request.method !== 'GET') {
-    return;
-  }
-  var origin = self.location.origin;
-  var key = event.request.url.substring(origin.length + 1);
-  // Redirect URLs to the index.html
-  if (key.indexOf('?v=') != -1) {
-    key = key.split('?v=')[0];
-  }
-  if (event.request.url == origin || event.request.url.startsWith(origin + '/#') || key == '') {
-    key = '/';
-  }
-  // If the URL is not the RESOURCE list then return to signal that the
-  // browser should take over.
-  if (!RESOURCES[key]) {
-    return;
-  }
-  // If the URL is the index.html, perform an online-first request.
-  if (key == '/') {
-    return onlineFirst(event);
-  }
-  event.respondWith(caches.open(CACHE_NAME)
-    .then((cache) =>  {
-      return cache.match(event.request).then((response) => {
-        // Either respond with the cached resource, or perform a fetch and
-        // lazily populate the cache.
-        return response || fetch(event.request).then((response) => {
-          cache.put(event.request, response.clone());
-          return response;
+      try {
+        await Promise.all(
+          CACHE_NAMES.map((cacheName) => caches.delete(cacheName)),
+        );
+      } catch (e) {
+        console.warn('Failed to delete legacy service worker caches:', e);
+      }
+
+      try {
+        const clients = await self.clients.matchAll({
+          type: 'window',
         });
-      })
-    })
-  );
-});
-
-self.addEventListener('message', (event) => {
-  // SkipWaiting can be used to immediately activate a waiting service worker.
-  // This will also require a page refresh triggered by the main worker.
-  if (event.data === 'skipWaiting') {
-    self.skipWaiting();
-    return;
-  }
-  if (event.data === 'downloadOffline') {
-    downloadOffline();
-    return;
-  }
-});
-
-// Download offline will check the RESOURCES for all files not in the cache
-// and populate them.
-async function downloadOffline() {
-  var resources = [];
-  var contentCache = await caches.open(CACHE_NAME);
-  var currentContent = {};
-  for (var request of await contentCache.keys()) {
-    var key = request.url.substring(origin.length + 1);
-    if (key == "") {
-      key = "/";
-    }
-    currentContent[key] = true;
-  }
-  for (var resourceKey of Object.keys(RESOURCES)) {
-    if (!currentContent[resourceKey]) {
-      resources.push(resourceKey);
-    }
-  }
-  return contentCache.addAll(resources);
-}
-
-// Attempt to download the resource online before falling back to
-// the offline cache.
-function onlineFirst(event) {
-  return event.respondWith(
-    fetch(event.request).then((response) => {
-      return caches.open(CACHE_NAME).then((cache) => {
-        cache.put(event.request, response.clone());
-        return response;
-      });
-    }).catch((error) => {
-      return caches.open(CACHE_NAME).then((cache) => {
-        return cache.match(event.request).then((response) => {
-          if (response != null) {
-            return response;
+        // Reload clients to ensure they are not using the old service worker.
+        clients.forEach((client) => {
+          if (client.url && 'navigate' in client) {
+            client.navigate(client.url);
           }
-          throw error;
         });
-      });
-    })
+      } catch (e) {
+        console.warn('Failed to navigate some service worker clients:', e);
+      }
+    })()
   );
-}
+});
