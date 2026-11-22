@@ -64,19 +64,32 @@ void main() {
       await tester.tap(find.text('6-Node Classic Line'));
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Copy Report'));
+      await tester.scrollUntilVisible(
+        find.text('Copy Report'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
       expect(find.text('Calculated Results'), findsOneWidget);
-      expect(find.text('Production Rate'), findsOneWidget);
-
-      await expectLater(tester, meetsGuideline(textContrastGuideline));
 
       await tester.tap(find.text('Copy Report'));
       await tester.pump();
       expect(fakeClipboard.copiedText, contains('Workstations: 3'));
       expect(find.text('Copied full RPW report to clipboard.'), findsOneWidget);
 
-      await tester.ensureVisible(find.text('Quick Text'));
+      await tester.scrollUntilVisible(
+        find.text('Production Rate'),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Production Rate'), findsOneWidget);
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+
+      await tester.scrollUntilVisible(
+        find.text('Quick Text'),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Quick Text'));
       await tester.pumpAndSettle();
@@ -92,6 +105,31 @@ void main() {
     } finally {
       handle.dispose();
     }
+  });
+
+  testWidgets('Theme toggle cycles System, Light, and Dark cleanly', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(CalculateRpwApp(locator: ServiceLocator.instance));
+    await tester.pumpAndSettle();
+
+    final ThemeRepository repo = ServiceLocator.instance.themeRepository;
+    expect(repo.themeMode, equals(ThemeMode.system));
+
+    await tester.tap(find.byTooltip('Switch theme, currently System'));
+    await tester.pump();
+    expect(repo.themeMode, equals(ThemeMode.light));
+
+    await tester.tap(find.byTooltip('Switch theme, currently Light'));
+    await tester.pump();
+    expect(repo.themeMode, equals(ThemeMode.dark));
+
+    await tester.tap(find.byTooltip('Switch theme, currently Dark'));
+    await tester.pump();
+    expect(repo.themeMode, equals(ThemeMode.system));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('Tablet and desktop viewport renders NavigationRail and split pane', (

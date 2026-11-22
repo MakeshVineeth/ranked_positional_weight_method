@@ -44,13 +44,6 @@ class AdaptiveShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeRepository themeRepo = context.watch<ThemeRepository>();
-    final (IconData themeIcon, String themeLabel) = switch (themeRepo.themeMode) {
-      ThemeMode.light => (Icons.light_mode_rounded, 'Switch theme, currently Light'),
-      ThemeMode.dark => (Icons.dark_mode_rounded, 'Switch theme, currently Dark'),
-      ThemeMode.system => (Icons.brightness_auto_rounded, 'Switch theme, currently System'),
-    };
-
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final WindowSizeClass sizeClass = WindowSizeClass.fromWidth(constraints.maxWidth);
@@ -77,12 +70,7 @@ class AdaptiveShell extends StatelessWidget {
                                   : _destinations[i].icon,
                             ),
                           ),
-                        IconButton(
-                          onPressed: themeRepo.cycleThemeMode,
-                          tooltip: themeLabel,
-                          iconSize: 18,
-                          icon: Icon(themeIcon),
-                        ),
+                        const _ThemeModeButton(iconSize: 18),
                       ],
                     ),
                   ),
@@ -112,13 +100,9 @@ class AdaptiveShell extends StatelessWidget {
               ),
             ],
           ),
-          actions: <Widget>[
-            IconButton(
-              onPressed: themeRepo.cycleThemeMode,
-              tooltip: themeLabel,
-              icon: Icon(themeIcon),
-            ),
-            const SizedBox(width: 4),
+          actions: const <Widget>[
+            _ThemeModeButton(),
+            SizedBox(width: 4),
           ],
         );
 
@@ -173,6 +157,32 @@ class AdaptiveShell extends StatelessWidget {
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+}
+
+class _ThemeModeButton extends StatelessWidget {
+  const _ThemeModeButton({this.iconSize});
+
+  final double? iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<ThemeRepository, ThemeMode>(
+      selector: (_, ThemeRepository repo) => repo.themeMode,
+      builder: (BuildContext context, ThemeMode mode, _) {
+        final (IconData icon, String label) = switch (mode) {
+          ThemeMode.light => (Icons.light_mode_rounded, 'Switch theme, currently Light'),
+          ThemeMode.dark => (Icons.dark_mode_rounded, 'Switch theme, currently Dark'),
+          ThemeMode.system => (Icons.brightness_auto_rounded, 'Switch theme, currently System'),
+        };
+        return IconButton(
+          onPressed: () => context.read<ThemeRepository>().cycleThemeMode(),
+          tooltip: label,
+          iconSize: iconSize,
+          icon: Icon(icon),
         );
       },
     );

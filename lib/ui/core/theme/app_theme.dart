@@ -1,21 +1,26 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:ranked_positional_method/core/constants/app_constants.dart';
 
-/// Provides Material 3 light, dark, and high-contrast themes for the application.
+/// Provides cached Material 3 light, dark, and high-contrast themes.
 abstract final class AppTheme {
   static const Color _seedColor = Color(AppConstants.seedColorValue);
 
+  static final ThemeData _light = _buildTheme(Brightness.light, contrastLevel: 0.0);
+  static final ThemeData _dark = _buildTheme(Brightness.dark, contrastLevel: 0.0);
+  static final ThemeData _highContrastLight = _buildTheme(Brightness.light, contrastLevel: 1.0);
+  static final ThemeData _highContrastDark = _buildTheme(Brightness.dark, contrastLevel: 1.0);
+
   /// Light Material 3 theme derived from the brand seed color.
-  static ThemeData light() => _buildTheme(Brightness.light, contrastLevel: 0.0);
+  static ThemeData light() => _light;
 
   /// Dark Material 3 theme derived from the brand seed color.
-  static ThemeData dark() => _buildTheme(Brightness.dark, contrastLevel: 0.0);
+  static ThemeData dark() => _dark;
 
   /// High-contrast light Material 3 theme for accessibility settings.
-  static ThemeData highContrastLight() => _buildTheme(Brightness.light, contrastLevel: 1.0);
+  static ThemeData highContrastLight() => _highContrastLight;
 
   /// High-contrast dark Material 3 theme for accessibility settings.
-  static ThemeData highContrastDark() => _buildTheme(Brightness.dark, contrastLevel: 1.0);
+  static ThemeData highContrastDark() => _highContrastDark;
 
   static ThemeData _buildTheme(Brightness brightness, {required double contrastLevel}) {
     final ColorScheme colorScheme = ColorScheme.fromSeed(
@@ -31,6 +36,7 @@ abstract final class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      splashFactory: InkRipple.splashFactory,
       materialTapTargetSize: MaterialTapTargetSize.padded,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
@@ -38,10 +44,16 @@ abstract final class AppTheme {
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
-        scrolledUnderElevation: 2,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        shape: Border(
+          bottom: BorderSide(color: colorScheme.outlineVariant),
+        ),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         color: colorScheme.surfaceContainerLow,
         shape: cardShape,
         margin: EdgeInsets.zero,

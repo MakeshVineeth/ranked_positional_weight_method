@@ -29,16 +29,18 @@ class CopyableResultCard extends StatelessWidget {
       excludeSemantics: true,
       label: copyPayload,
       onTapHint: 'copy to clipboard',
-      child: Card(
+      child: Material(
+        type: MaterialType.card,
         color: item.isHighlighted ? colors.primaryContainer : colors.surfaceContainerLow,
-        shape: item.isHighlighted
-            ? RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: colors.primary, width: 1.5),
-              )
-            : null,
-        child: InkWell(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: item.isHighlighted ? colors.primary : colors.outlineVariant,
+            width: item.isHighlighted ? 1.5 : 1.0,
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
           focusColor: colors.primary.withValues(alpha: 0.24),
           onTap: () => onCopy(copyPayload),
           child: ConstrainedBox(

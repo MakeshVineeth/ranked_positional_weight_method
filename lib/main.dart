@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:ranked_positional_method/app/di/service_locator.dart';
@@ -20,6 +20,22 @@ Future<void> main() async {
   final ServiceLocator locator = ServiceLocator.instance;
   await locator.themeRepository.load();
   runApp(CalculateRpwApp(locator: locator));
+}
+
+class _AppScrollBehavior extends MaterialScrollBehavior {
+  const _AppScrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    if (kIsWeb) {
+      return child;
+    }
+    return super.buildOverscrollIndicator(context, child, details);
+  }
 }
 
 /// Root widget configuring providers, Material 3 themes, and declarative routing.
@@ -62,8 +78,9 @@ class _CalculateRpwAppState extends State<CalculateRpwApp> {
           ),
         ),
       ],
-      child: Consumer<ThemeRepository>(
-        builder: (BuildContext context, ThemeRepository themeRepo, _) {
+      child: Selector<ThemeRepository, ThemeMode>(
+        selector: (_, ThemeRepository repo) => repo.themeMode,
+        builder: (BuildContext context, ThemeMode themeMode, _) {
           return MaterialApp.router(
             title: AppConstants.appTitle,
             debugShowCheckedModeBanner: false,
@@ -71,7 +88,9 @@ class _CalculateRpwAppState extends State<CalculateRpwApp> {
             darkTheme: AppTheme.dark(),
             highContrastTheme: AppTheme.highContrastLight(),
             highContrastDarkTheme: AppTheme.highContrastDark(),
-            themeMode: themeRepo.themeMode,
+            themeMode: themeMode,
+            themeAnimationDuration: Duration.zero,
+            scrollBehavior: const _AppScrollBehavior(),
             routerConfig: _router,
           );
         },

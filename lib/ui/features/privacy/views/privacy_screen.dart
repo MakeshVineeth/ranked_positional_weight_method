@@ -34,56 +34,59 @@ class PrivacyScreen extends StatelessWidget {
             ? 14
             : 20;
 
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(pad),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 820),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Semantics(
-                    header: true,
-                    child: Text(
-                      'Privacy Policy and About',
-                      style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Calculate RPW runs completely offline on your device. No personal information, calculations, or usage telemetry ever leaves your phone, browser, or computer.',
-                    style: textTheme.bodyLarge?.copyWith(color: colors.onSurfaceVariant),
-                  ),
-                  const SizedBox(height: 16),
-                  const _PrivacyCard(
-                    title: 'Data Collection',
-                    body: 'We do not collect, store on external servers, sell, or share any personal data, device identifiers, location records, crash reports, or analytics.',
-                  ),
-                  const SizedBox(height: 12),
-                  const _PrivacyCard(
-                    title: 'Local Storage and Permissions',
-                    body: 'The Android release build requires zero special system permissions. Only your selected theme mode (System, Light, or Dark) is saved locally on your device using platform preferences. Clipboard writes happen only when you activate a result card or Copy button.',
-                  ),
-                  const SizedBox(height: 12),
-                  _PrivacyCard(
-                    title: 'Standalone Web Privacy Policy',
-                    body:
-                        'For Google Play Console verification and web visitors, the full privacy policy is hosted at:\n${AppConstants.privacyPolicyUrl}',
-                    copyActionLabel: 'Copy privacy policy URL',
-                    onCopy: () =>
-                        _copyUrl(context, 'privacy policy', AppConstants.privacyPolicyUrl),
-                  ),
-                  const SizedBox(height: 12),
-                  _PrivacyCard(
-                    title: 'Application Details',
-                    body:
-                        '${AppConstants.appTitle} (${AppConstants.appSubtitle})\nVersion ${AppConstants.appVersion}\nProject Page: ${AppConstants.projectUrl}',
-                    copyActionLabel: 'Copy project page URL',
-                    onCopy: () => _copyUrl(context, 'project page', AppConstants.projectUrl),
-                  ),
-                ],
-              ),
+        final List<Widget> items = <Widget>[
+          Semantics(
+            header: true,
+            child: Text(
+              'Privacy Policy and About',
+              style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Calculate RPW runs completely offline on your device. No personal information, calculations, or usage telemetry ever leaves your phone, browser, or computer.',
+            style: textTheme.bodyLarge?.copyWith(color: colors.onSurfaceVariant),
+          ),
+          const SizedBox(height: 16),
+          const _PrivacyCard(
+            title: 'Data Collection',
+            body: 'We do not collect, store on external servers, sell, or share any personal data, device identifiers, location records, crash reports, or analytics.',
+          ),
+          const SizedBox(height: 12),
+          const _PrivacyCard(
+            title: 'Local Storage and Permissions',
+            body: 'The Android release build requires zero special system permissions. Only your selected theme mode (System, Light, or Dark) is saved locally on your device using platform preferences. Clipboard writes happen only when you activate a result card or Copy button.',
+          ),
+          const SizedBox(height: 12),
+          _PrivacyCard(
+            title: 'Standalone Web Privacy Policy',
+            body:
+                'For Google Play Console verification and web visitors, the full privacy policy is hosted at:\n${AppConstants.privacyPolicyUrl}',
+            copyActionLabel: 'Copy privacy policy URL',
+            onCopy: () => _copyUrl(context, 'privacy policy', AppConstants.privacyPolicyUrl),
+          ),
+          const SizedBox(height: 12),
+          _PrivacyCard(
+            title: 'Application Details',
+            body:
+                '${AppConstants.appTitle} (${AppConstants.appSubtitle})\nVersion ${AppConstants.appVersion}\nProject Page: ${AppConstants.projectUrl}',
+            copyActionLabel: 'Copy project page URL',
+            onCopy: () => _copyUrl(context, 'project page', AppConstants.projectUrl),
+          ),
+        ];
+
+        return SelectionArea(
+          child: ListView.builder(
+            padding: EdgeInsets.all(pad),
+            itemCount: items.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 820),
+                  child: SizedBox(width: double.infinity, child: items[index]),
+                ),
+              );
+            },
           ),
         );
       },
@@ -133,7 +136,7 @@ class _PrivacyCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            SelectableText(body, style: textTheme.bodyMedium),
+            Text(body, style: textTheme.bodyMedium),
           ],
         ),
       ),

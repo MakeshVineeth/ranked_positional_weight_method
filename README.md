@@ -61,7 +61,7 @@ Build release targets:
 
 ```sh
 flutter build apk --release
-flutter build web --release --base-href /ranked_positional_weight_method/
+flutter build web --release --wasm --base-href /ranked_positional_weight_method/
 flutter build windows --release
 ```
 

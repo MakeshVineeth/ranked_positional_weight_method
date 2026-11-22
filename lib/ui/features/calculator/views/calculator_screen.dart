@@ -3,20 +3,42 @@ import 'dart:ui' show DisplayFeature, DisplayFeatureType;
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:ranked_positional_method/core/layout/window_size_class.dart';
+import 'package:ranked_positional_method/domain/models/result_node.dart';
+import 'package:ranked_positional_method/domain/models/rpw_result.dart';
 import 'package:ranked_positional_method/ui/features/calculator/view_models/calculator_view_model.dart';
 import 'package:ranked_positional_method/ui/features/calculator/widgets/guided_input_panel.dart';
 import 'package:ranked_positional_method/ui/features/calculator/widgets/quick_text_input_panel.dart';
 import 'package:ranked_positional_method/ui/features/calculator/widgets/results_panel.dart';
 import 'package:ranked_positional_method/ui/features/calculator/widgets/wear_calculator_view.dart';
 
+typedef _ResultsSnapshot = ({
+  String? errorMessage,
+  RpwResult? result,
+  List<ResultGroup> resultSections,
+});
+
 /// Main adaptive RPW calculator workspace supporting Wear, Phones, Foldables, Tablets, and Desktop.
-class CalculatorScreen extends StatelessWidget {
+class CalculatorScreen extends StatefulWidget {
   /// Creates a [CalculatorScreen].
   const CalculatorScreen({super.key});
 
   @override
+  State<CalculatorScreen> createState() => _CalculatorScreenState();
+}
+
+class _CalculatorScreenState extends State<CalculatorScreen> {
+  final ScrollController _inputScrollController = ScrollController();
+  final ScrollController _resultsScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _inputScrollController.dispose();
+    _resultsScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final CalculatorViewModel viewModel = context.watch<CalculatorViewModel>();
     final List<DisplayFeature> features = MediaQuery.displayFeaturesOf(context);
     final bool hasVerticalHinge = features.any(
       (DisplayFeature f) =>
@@ -29,11 +51,11 @@ class CalculatorScreen extends StatelessWidget {
         final WindowSizeClass sizeClass = WindowSizeClass.fromWidth(constraints.maxWidth);
 
         if (sizeClass == WindowSizeClass.wear) {
-          return WearCalculatorView(viewModel: viewModel);
+          return Consumer<CalculatorViewModel>(
+            builder: (_, CalculatorViewModel viewModel, _) =>
+                WearCalculatorView(viewModel: viewModel),
+          );
         }
-
-        final Widget inputColumn = _buildInputSection(viewModel);
-        final Widget resultsColumn = ResultsPanel(viewModel: viewModel);
 
         if (hasVerticalHinge && sizeClass.supportsSplitPane) {
           return Row(
@@ -42,10 +64,7 @@ class CalculatorScreen extends StatelessWidget {
                 child: FocusTraversalGroup(
                   child: DisplayFeatureSubScreen(
                     anchorPoint: Offset.zero,
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: inputColumn,
-                    ),
+                    child: _buildInputScrollPane(padding: 16),
                   ),
                 ),
               ),
@@ -53,10 +72,7 @@ class CalculatorScreen extends StatelessWidget {
                 child: FocusTraversalGroup(
                   child: DisplayFeatureSubScreen(
                     anchorPoint: Offset(constraints.maxWidth, 0),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: resultsColumn,
-                    ),
+                    child: _buildResultsScrollPane(padding: 16),
                   ),
                 ),
               ),
@@ -74,20 +90,14 @@ class CalculatorScreen extends StatelessWidget {
                   Expanded(
                     flex: 5,
                     child: FocusTraversalGroup(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(20),
-                        child: inputColumn,
-                      ),
+                      child: _buildInputScrollPane(padding: 20),
                     ),
                   ),
                   const VerticalDivider(width: 1),
                   Expanded(
                     flex: 6,
                     child: FocusTraversalGroup(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(20),
-                        child: resultsColumn,
-                      ),
+                      child: _buildResultsScrollPane(padding: 20),
                     ),
                   ),
                 ],
@@ -96,21 +106,87 @@ class CalculatorScreen extends StatelessWidget {
           );
         }
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 640),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  inputColumn,
-                  const SizedBox(height: 20),
-                  resultsColumn,
-                ],
+        return CustomScrollView(
+          controller: _resultsScrollController,
+          primary: false,
+          slivers: <Widget>[
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+              sliver: SliverToBoxAdapter(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 640),
+                    child: RepaintBoundary(
+                      child: Consumer<CalculatorViewModel>(
+                        builder: (_, CalculatorViewModel viewModel, _) =>
+                            _buildInputSection(viewModel),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              sliver: _buildResultsSliverSelector(maxWidth: 640),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildInputScrollPane({required double padding}) {
+    return RepaintBoundary(
+      child: CustomScrollView(
+        controller: _inputScrollController,
+        primary: false,
+        slivers: <Widget>[
+          SliverPadding(
+            padding: EdgeInsets.all(padding),
+            sliver: SliverToBoxAdapter(
+              child: Consumer<CalculatorViewModel>(
+                builder: (_, CalculatorViewModel viewModel, _) => _buildInputSection(viewModel),
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultsScrollPane({required double padding}) {
+    return RepaintBoundary(
+      child: CustomScrollView(
+        controller: _resultsScrollController,
+        primary: false,
+        slivers: <Widget>[
+          SliverPadding(
+            padding: EdgeInsets.all(padding),
+            sliver: _buildResultsSliverSelector(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultsSliverSelector({double? maxWidth}) {
+    return Selector<CalculatorViewModel, _ResultsSnapshot>(
+      selector: (_, CalculatorViewModel vm) => (
+        errorMessage: vm.errorMessage,
+        result: vm.result,
+        resultSections: vm.resultSections,
+      ),
+      builder: (BuildContext context, _ResultsSnapshot snapshot, _) {
+        final CalculatorViewModel vm = context.read<CalculatorViewModel>();
+        return ResultsSliverList(
+          errorMessage: snapshot.errorMessage,
+          result: snapshot.result,
+          resultSections: snapshot.resultSections,
+          onLoadSample: vm.loadSample,
+          onCopyText: vm.copyText,
+          onCopyReport: vm.copyFullReport,
+          maxWidth: maxWidth,
         );
       },
     );
