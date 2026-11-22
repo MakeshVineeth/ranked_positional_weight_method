@@ -1,37 +1,80 @@
-import 'package:flutter/material.dart';
-import 'package:ranked_positional_method/Home.dart';
-import 'package:ranked_positional_method/common.dart';
-import 'package:theme_provider/theme_provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:ranked_positional_method/app/di/service_locator.dart';
+import 'package:ranked_positional_method/app/router/app_router.dart';
+import 'package:ranked_positional_method/core/constants/app_constants.dart';
+import 'package:ranked_positional_method/data/repositories/theme_repository.dart';
+import 'package:ranked_positional_method/ui/core/theme/app_theme.dart';
+import 'package:ranked_positional_method/ui/features/calculator/view_models/calculator_view_model.dart';
 
-void main() => runApp(RootApp());
+/// Application entry point.
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb) {
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
+  final ServiceLocator locator = ServiceLocator.instance;
+  await locator.themeRepository.load();
+  runApp(CalculateRpwApp(locator: locator));
+}
 
-class RootApp extends StatelessWidget {
+/// Root widget configuring providers, Material 3 themes, and declarative routing.
+class CalculateRpwApp extends StatefulWidget {
+  /// Creates the root application widget backed by [locator].
+  const CalculateRpwApp({
+    super.key,
+    required this.locator,
+  });
+
+  /// Dependency container providing services, repositories, and solvers.
+  final ServiceLocator locator;
+
+  @override
+  State<CalculateRpwApp> createState() => _CalculateRpwAppState();
+}
+
+class _CalculateRpwAppState extends State<CalculateRpwApp> {
+  late final GoRouter _router = AppRouter.create();
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ThemeProvider(
-      saveThemesOnChange: true,
-      defaultThemeId: 'light_theme',
-      themes: [
-        AppTheme(
-          id: 'dark_theme',
-          data: Common.dataTheme(context, Brightness.dark),
-          description: 'Dark Theme',
+    return MultiProvider(
+      providers: <SingleChildWidget>[
+        ChangeNotifierProvider<ThemeRepository>.value(
+          value: widget.locator.themeRepository,
         ),
-        AppTheme(
-          id: 'light_theme',
-          data: Common.dataTheme(context, Brightness.light),
-          description: 'Light Theme',
-        ),
-      ],
-      child: ThemeConsumer(
-        child: Builder(
-          builder: (BuildContext themeContext) => MaterialApp(
-            theme: ThemeProvider.themeOf(themeContext).data,
-            title: Common.title,
-            home: Home(),
-            debugShowCheckedModeBanner: false,
+        ChangeNotifierProvider<CalculatorViewModel>(
+          create: (_) => CalculatorViewModel(
+            validator: widget.locator.validator,
+            solver: widget.locator.solver,
+            composer: widget.locator.composer,
+            clipboard: widget.locator.clipboard,
           ),
         ),
+      ],
+      child: Consumer<ThemeRepository>(
+        builder: (BuildContext context, ThemeRepository themeRepo, _) {
+          return MaterialApp.router(
+            title: AppConstants.appTitle,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
+            highContrastTheme: AppTheme.highContrastLight(),
+            highContrastDarkTheme: AppTheme.highContrastDark(),
+            themeMode: themeRepo.themeMode,
+            routerConfig: _router,
+          );
+        },
       ),
     );
   }

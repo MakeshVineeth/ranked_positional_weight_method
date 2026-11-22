@@ -1,0 +1,39 @@
+site_name: Calculate RPW Documentation
+site_description: Offline assembly line balancing calculator using the Ranked Positional Weight (RPW) method.
+site_url: https://makeshvineeth.github.io/ranked_positional_weight_method/docs/
+repo_url: https://github.com/MakeshVineeth/ranked_positional_weight_method
+repo_name: MakeshVineeth/ranked_positional_weight_method
+docs_dir: .docs
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - User Guide: user-guide.md
+  - Architecture (C4 Model): architecture/index.md
+  - Architecture Decision Records:
+      - Overview: adrs/index.md
+      - 0001 Layered MVVM Architecture: adrs/0001-layered-mvvm-architecture-and-state-management.md
+      - 0002 Platform-Agnostic Adaptive UI: adrs/0002-platform-agnostic-design-and-adaptive-m3-ui.md
+      - 0003 Android AGP 9 and SDK 37: adrs/0003-android-agp9-built-in-kotlin-and-sdk-37.md
+      - 0004 RPW Domain Logic Fixes: adrs/0004-rpw-domain-logic-bug-fixes-and-input-validation.md
+      - 0005 Offline-First Privacy Policy: adrs/0005-offline-first-privacy-and-zero-permission-policy.md
+  - Privacy Policy: privacy.md
