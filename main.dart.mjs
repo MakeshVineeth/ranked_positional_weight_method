@@ -97,7 +97,7 @@ class CompiledApp {
       AH: x0 => x0.firstChild,
       AI: (x0,x1) => { x0.disabled = x1 },
       AJ: (x0,x1) => x0.selectNode(x1),
-      AK: () => globalThis._flutter,
+      AK: (x0,x1,x2,x3) => x0.addEventListener(x1,x2,x3),
       B: s => printToConsole(s),
       BB: (o, start, length) => new Uint8Array(o.buffer, o.byteOffset + start, length),
       BC: o => {
@@ -112,6 +112,7 @@ class CompiledApp {
       BH: x0 => x0.viewConstraints,
       BI: (x0,x1) => { x0.scrollLeft = x1 },
       BJ: x0 => x0.getSelection(),
+      BK: (wasmFunction,f) => finalizeWrapper(f, function(x0) { return wasmFunction(f,arguments.length,x0) }),
       C: Function.prototype.call.bind(Number.prototype.toString),
       CB: () => new TextDecoder("utf-8", {fatal: true}),
       CC: Function.prototype.call.bind(DataView.prototype.setFloat64),
@@ -122,6 +123,7 @@ class CompiledApp {
       CH: x0 => x0.hostElement,
       CI: (x0,x1) => { x0.spellcheck = x1 },
       CJ: x0 => x0.removeAllRanges(),
+      CK: x0 => x0.preventDefault(),
       D: Function.prototype.call.bind(BigInt.prototype.toString),
       DB: () => new TextDecoder("utf-8", {fatal: false}),
       DC: (t, s) => t.set(s),
@@ -132,6 +134,7 @@ class CompiledApp {
       DH: x0 => ({runApp: x0}),
       DI: (x0,x1) => { x0.disabled = x1 },
       DJ: (x0,x1) => x0.addRange(x1),
+      DK: x0 => x0.shiftKey,
       E: (exn) => {
         let stackString = exn.toString();
         let frames = stackString.split('\n');
@@ -150,6 +153,7 @@ class CompiledApp {
       EH: (wasmFunction,f) => finalizeWrapper(f, function(x0) { return wasmFunction(f,arguments.length,x0) }),
       EI: (a, i) => a.splice(i, 1),
       EJ: () => globalThis.window,
+      EK: x0 => x0.metaKey,
       F: o => String(o),
       FB: (l, r) => l === r,
       FC: Function.prototype.call.bind(DataView.prototype.getFloat32),
@@ -160,6 +164,7 @@ class CompiledApp {
       FH: Function.prototype.call.bind(DataView.prototype.getBigInt64),
       FI: a => a.pop(),
       FJ: (x0,x1) => { x0.innerText = x1 },
+      FK: x0 => x0.altKey,
       G: () => new Error().stack,
       GB: (x0,x1) => x0[x1],
       GC: o => {
@@ -174,6 +179,7 @@ class CompiledApp {
       GH: (o, start, length) => new BigInt64Array(o.buffer, o.byteOffset + start, length),
       GI: x0 => new WeakRef(x0),
       GJ: x0 => x0.offsetY,
+      GK: x0 => x0.ctrlKey,
       H: s => JSON.stringify(s),
       HB: x0 => x0.index,
       HC: Function.prototype.call.bind(DataView.prototype.getUint32),
@@ -184,6 +190,7 @@ class CompiledApp {
       HH: () => typeof dartUseDateNowForTicks !== "undefined",
       HI: x0 => x0.deref(),
       HJ: x0 => x0.offsetX,
+      HK: (x0,x1) => x0.getAttribute(x1),
       I: Function.prototype.call.bind(Number.prototype.toString),
       IB: (o, p, r) => o.replace(p, () => r),
       IC: o => {
@@ -199,6 +206,7 @@ class CompiledApp {
       IH: () => Date.now(),
       II: () => globalThis.WeakRef,
       IJ: x0 => x0.button,
+      IK: (x0,x1) => x0.closest(x1),
       J: Function.prototype.call.bind(String.prototype.indexOf),
       JB: s => s.toUpperCase(),
       JC: Function.prototype.call.bind(DataView.prototype.getInt32),
@@ -213,6 +221,7 @@ class CompiledApp {
         return new DataView(dst);
       },
       JJ: x0 => x0.classList,
+      JK: x0 => x0.tagName,
       K: (s, p, i) => s.lastIndexOf(p, i),
       KB: Object.is,
       KC: o => {
@@ -227,6 +236,7 @@ class CompiledApp {
       KH: (x0,x1) => x0.decode(x1),
       KI: (a, s, e) => a.slice(s, e),
       KJ: (x0,x1) => { x0.height = x1 },
+      KK: x0 => x0.target,
       L: (exn) => {
         if (exn instanceof Error) {
           return exn.stack;
@@ -243,6 +253,7 @@ class CompiledApp {
       LH: (x0,x1,x2) => x0.slice(x1,x2),
       LI: x0 => x0.close(),
       LJ: (x0,x1) => { x0.width = x1 },
+      LK: (wasmFunction,f) => finalizeWrapper(f, function(x0) { return wasmFunction(f,arguments.length,x0) }),
       M: o => o === undefined,
       MB: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
         const setValue = dartInstance.exports.$wasmI8ArraySet;
@@ -258,6 +269,7 @@ class CompiledApp {
       MH: x0 => new Uint8Array(x0),
       MI: x0 => x0.height,
       MJ: x0 => x0.style,
+      MK: (x0,x1,x2,x3) => x0.removeEventListener(x1,x2,x3),
       N: (c) =>
       queueMicrotask(() => dartInstance.exports.$invokeCallback(c)),
       NB: Function.prototype.call.bind(String.prototype.toLowerCase),
@@ -269,6 +281,7 @@ class CompiledApp {
       NH: (x0,x1) => x0.adoptText(x1),
       NI: x0 => x0.width,
       NJ: x0 => x0.sheet,
+      NK: (x0,x1,x2,x3) => x0.open(x1,x2,x3),
       O: (x0,x1) => x0.didCreateEngineInitializer(x1),
       OB: (o, p, r) => o.replaceAll(p, () => r),
       OC: o => o instanceof Int16Array,
@@ -279,6 +292,7 @@ class CompiledApp {
       OH: x0 => x0.first(),
       OI: (x0,x1,x2,x3,x4,x5) => x0.createImageBitmap(x1,x2,x3,x4,x5),
       OJ: x0 => x0.head,
+      OK: x0 => x0.extraAssets,
       P: (x0,x1) => ({initializeEngine: x0,autoStart: x1}),
       PB: x0 => x0.flags,
       PC: o => o instanceof Uint8ClampedArray,
@@ -289,6 +303,7 @@ class CompiledApp {
       PH: x0 => x0.next(),
       PI: (x0,x1) => x0.createImageBitmap(x1),
       PJ: () => globalThis.document,
+      PK: x0 => x0.fontManifest,
       Q: (wasmFunction,f) => finalizeWrapper(f, function(x0) { return wasmFunction(f,arguments.length,x0) }),
       QB: s => s.trim(),
       QC: o => {
@@ -303,6 +318,7 @@ class CompiledApp {
       QH: x0 => x0.current(),
       QI: x0 => new Blob(x0),
       QJ: (x0,x1) => x0.getItem(x1),
+      QK: x0 => x0.assetManifest,
       R: (wasmFunction,f) => finalizeWrapper(f, function() { return wasmFunction(f,arguments.length) }),
       RB: (a, s) => a.join(s),
       RC: Function.prototype.call.bind(DataView.prototype.setInt32),
@@ -313,6 +329,7 @@ class CompiledApp {
       RH: (x0,x1) => new Intl.v8BreakIterator(x0,x1),
       RI: x0 => x0.close(),
       RJ: (x0,x1) => x0.key(x1),
+      RK: x0 => x0.buildConfig,
       S: x0 => new Promise(x0),
       SB: x0 => x0.random(),
       SC: Function.prototype.call.bind(DataView.prototype.setUint32),
@@ -323,6 +340,7 @@ class CompiledApp {
       SH: x0 => x0.v8BreakIterator,
       SI: x0 => x0.naturalHeight,
       SJ: x0 => x0.length,
+      SK: x0 => x0.getReader(),
       T: (wasmFunction,f) => finalizeWrapper(f, function(x0,x1) { return wasmFunction(f,arguments.length,x0,x1) }),
       TB: () => globalThis.Math,
       TC: Function.prototype.call.bind(DataView.prototype.setInt16),
@@ -333,6 +351,7 @@ class CompiledApp {
       TH: () => globalThis.Intl,
       TI: x0 => x0.naturalWidth,
       TJ: (x0,x1,x2,x3,x4,x5,x6,x7,x8,x9) => x0.drawImage(x1,x2,x3,x4,x5,x6,x7,x8,x9),
+      TK: x0 => x0.value,
       U: (x0,x1,x2) => x0.call(x1,x2),
       UB: (x0,x1) => x0.error(x1),
       UC: Function.prototype.call.bind(DataView.prototype.setUint16),
@@ -343,6 +362,7 @@ class CompiledApp {
       UH: (x0,x1) => x0.segment(x1),
       UI: (x0,x1) => { x0.src = x1 },
       UJ: (x0,x1) => x0.getContext(x1),
+      UK: x0 => x0.done,
       V: (constructor, args) => {
         const factoryFunction = constructor.bind.apply(
             constructor, [null, ...args]);
@@ -357,6 +377,7 @@ class CompiledApp {
       VH: x0 => x0.index,
       VI: x0 => x0.displayHeight,
       VJ: (x0,x1) => { x0.height = x1 },
+      VK: x0 => x0.read(),
       W: x0 => new Array(x0),
       WB: s => s.trimRight(),
       WC: Function.prototype.call.bind(DataView.prototype.setInt8),
@@ -367,6 +388,7 @@ class CompiledApp {
       WH: x0 => x0.next(),
       WI: x0 => x0.displayWidth,
       WJ: (x0,x1) => { x0.width = x1 },
+      WK: x0 => x0.body,
       X: o => [o],
       XB: (x0,x1,x2,x3) => x0.pushState(x1,x2,x3),
       XC: Function.prototype.call.bind(DataView.prototype.getInt8),
@@ -377,6 +399,7 @@ class CompiledApp {
       XH: x0 => x0.value,
       XI: x0 => x0.duration,
       XJ: (x0,x1) => x0.transferFromImageBitmap(x1),
+      XK: (x0,x1) => new OffscreenCanvas(x0,x1),
       Y: (o0, o1) => [o0, o1],
       YB: () => ({}),
       YC: o => {
@@ -391,6 +414,7 @@ class CompiledApp {
       YH: x0 => x0.done,
       YI: (x0,x1) => x0.decode(x1),
       YJ: x0 => x0.rasterEndMilliseconds,
+      YK: x0 => x0.assetBase,
       Z: (o0, o1, o2) => [o0, o1, o2],
       ZB: (o, p, v) => o[p] = v,
       ZC: (o, start, length) => new Float64Array(o.buffer, o.byteOffset + start, length),
@@ -409,6 +433,7 @@ class CompiledApp {
       ZH: (o, m, a) => o[m].apply(o, a),
       ZI: (x0,x1) => ({frameIndex: x0,completeFramesOnly: x1}),
       ZJ: x0 => x0.rasterStartMilliseconds,
+      ZK: x0 => x0.loader,
       a: (o0, o1, o2, o3) => [o0, o1, o2, o3],
       aB: () => [],
       aC: (o, start, length) => new Float32Array(o.buffer, o.byteOffset + start, length),
@@ -419,6 +444,7 @@ class CompiledApp {
       aH: x0 => x0.iterator,
       aI: x0 => x0.image,
       aJ: x0 => x0.imageBitmaps,
+      aK: () => globalThis._flutter,
       b: (x0,x1,x2) => { x0[x1] = x2 },
       bB: (a, i) => a.push(i),
       bC: (o, start, length) => new Uint32Array(o.buffer, o.byteOffset + start, length),
@@ -592,7 +618,7 @@ class CompiledApp {
       oG: x0 => x0.getCoalescedEvents(),
       oH: x0 => x0.language,
       oI: () => globalThis.window,
-      oJ: x0 => x0.extraAssets,
+      oJ: x0 => x0.userAgent,
       p: o => o,
       pB: x0 => new ArrayBuffer(x0),
       pC: o => Object.keys(o),
@@ -602,7 +628,7 @@ class CompiledApp {
       pG: x0 => x0.blur(),
       pH: (handle) => clearInterval(handle),
       pI: (o, p) => p in o,
-      pJ: x0 => x0.fontManifest,
+      pJ: x0 => x0.navigator,
       q: o => {
         if (o === undefined || o === null) return 0;
         if (typeof o === 'boolean') return 1;
@@ -617,7 +643,7 @@ class CompiledApp {
       qH: (ms, c) =>
       setInterval(() => dartInstance.exports.$invokeCallback(c), ms),
       qI: x0 => x0.groups,
-      qJ: x0 => x0.assetManifest,
+      qJ: (x0,x1,x2) => x0.setAttribute(x1,x2),
       r: x0 => x0.dotAll,
       rB: (x0,x1,x2) => new DataView(x0,x1,x2),
       rC: o => typeof o === 'function' && o[jsWrappedDartFunctionSymbol] === true,
@@ -632,7 +658,7 @@ class CompiledApp {
       rG: x0 => x0.button,
       rH: () => Date.now(),
       rI: x0 => x0.pop(),
-      rJ: x0 => x0.buildConfig,
+      rJ: (x0,x1) => x0.createElement(x1),
       s: x0 => x0.unicode,
       sB: (o, p) => o[p],
       sC: (wasmFunction,f) => finalizeWrapper(f, function(x0) { return wasmFunction(f,arguments.length,x0) }),
@@ -642,7 +668,7 @@ class CompiledApp {
       sG: (x0,x1) => x0.prepend(x1),
       sH: (x0,x1,x2) => x0.insertBefore(x1,x2),
       sI: (x0,x1) => x0.createElement(x1),
-      sJ: x0 => x0.getReader(),
+      sJ: (x0,x1) => { x0.cursor = x1 },
       t: x0 => x0.ignoreCase,
       tB: (o) => new DataView(o.buffer, o.byteOffset, o.byteLength),
       tC: (wasmFunction,f) => finalizeWrapper(f, function(x0,x1) { return wasmFunction(f,arguments.length,x0,x1) }),
@@ -652,7 +678,7 @@ class CompiledApp {
       tG: x0 => x0.innerHeight,
       tH: x0 => x0.id,
       tI: (x0,x1) => x0.append(x1),
-      tJ: x0 => x0.value,
+      tJ: (x0,x1) => { x0.height = x1 },
       u: x0 => x0.multiline,
       uB: Function.prototype.call.bind(Object.getOwnPropertyDescriptor(DataView.prototype, 'byteLength').get),
       uC: (p, s, f) => p.then(s, (e) => f(e, e === undefined)),
@@ -662,7 +688,7 @@ class CompiledApp {
       uG: x0 => x0.height,
       uH: x0 => x0.offsetHeight,
       uI: (x0,x1,x2) => x0.insertRule(x1,x2),
-      uJ: x0 => x0.done,
+      uJ: (x0,x1) => { x0.width = x1 },
       v: (string, token) => string.split(token),
       vB: o => o.byteOffset,
       vC: (o, i) => o[i],
@@ -672,7 +698,7 @@ class CompiledApp {
       vG: x0 => x0.width,
       vH: x0 => x0.offsetWidth,
       vI: (x0,x1) => x0.add(x1),
-      vJ: x0 => x0.read(),
+      vJ: (x0,x1) => { x0.display = x1 },
       w: (a, i) => a[i],
       wB: o => o.buffer,
       wC: o => o.length,
@@ -687,7 +713,7 @@ class CompiledApp {
       wG: x0 => x0.clientHeight,
       wH: x0 => x0.stopPropagation(),
       wI: (x0,x1,x2) => x0.addEventListener(x1,x2),
-      wJ: x0 => x0.body,
+      wJ: (x0,x1) => { x0.opacity = x1 },
       x: a => a.length,
       xB: (b, o) => new DataView(b, o),
       xC: o => {
@@ -700,7 +726,7 @@ class CompiledApp {
       xG: x0 => x0.clientWidth,
       xH: x0 => x0.disabled,
       xI: (wasmFunction,f) => finalizeWrapper(f, function(x0) { return wasmFunction(f,arguments.length,x0) }),
-      xJ: (x0,x1) => new OffscreenCanvas(x0,x1),
+      xJ: x0 => x0.style,
       y: o => o instanceof Array,
       yB: (b, o, l) => new DataView(b, o, l),
       yC: o => {
@@ -737,7 +763,7 @@ class CompiledApp {
       yG: x0 => x0.innerWidth,
       yH: (x0,x1) => { x0.min = x1 },
       yI: x0 => x0.preventDefault(),
-      yJ: x0 => x0.assetBase,
+      yJ: (o, p, v) => o[p] = v,
       z: (string, times) => string.repeat(times),
       zB: Function.prototype.call.bind(DataView.prototype.getUint8),
       zC: x0 => x0.state,
@@ -747,7 +773,7 @@ class CompiledApp {
       zG: (x0,x1) => x0.removeChild(x1),
       zH: (x0,x1) => { x0.max = x1 },
       zI: x0 => x0.createRange(),
-      zJ: x0 => x0.loader,
+      zJ: () => globalThis.document,
 
     };
 
